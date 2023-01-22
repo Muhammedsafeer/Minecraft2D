@@ -7,13 +7,15 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import entity.Player;
+
 public class GamePanel extends JPanel implements Runnable{
 
 	// SCREEN SETTINGS
 	final int originalTileSize = 16; // 16x TEXTURES
 	final int scale = 3;
 	
-	final int tileSize = originalTileSize * scale;
+	public final int tileSize = originalTileSize * scale;
 	final int maxScreenCol = 16;
 	final int maxScreenRow = 12;
 	final int screenWidth = maxScreenCol * tileSize;
@@ -23,6 +25,7 @@ public class GamePanel extends JPanel implements Runnable{
 	Thread gameThread;
 	final int FPS_SET = 120;
 	final int UPS_SET = 120;
+	Player player = new Player(this, KeyH);
 	
 	// SET PLAYER'S DEFUALT POSITION
 	int playerX = 100;
@@ -91,23 +94,7 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 	
 	public void update() {
-		if (KeyH.upPressed == true) {
-			
-			playerY -= playerSpeed;
-			
-		}else if (KeyH.downPressed == true) {
-			
-			playerY += playerSpeed;
-			
-		}else if (KeyH.leftPressed == true) {
-			
-			playerX -= playerSpeed;
-			
-		}else if (KeyH.rightPressed == true) {
-			
-			playerX += playerSpeed;
-			
-		}
+		player.update();
 	}
 	public void paintComponent(Graphics g) {
 
@@ -115,8 +102,7 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		Graphics2D g2d = (Graphics2D)g;
 		
-		g2d.setColor(Color.white);
-		g2d.fillRect(playerX, playerY, tileSize, tileSize * 2);
+		player.draw(g2d);
 		
 		g2d.dispose();
 	}
