@@ -166,10 +166,13 @@ public class BlockManager {
 				FileWriter bWriter = new FileWriter("saves/world1/chunk0.txt");
 				String nextLine = "\n";
 				
-				for (int i=0;i<line.length;i++) {
-					if (i!=line.length) { bWriter.write(line[i] + nextLine); }
-					if (i==line.length) { bWriter.write(line[i]); }
+				int j = 0;
+				for (int i=0;i<line.length-1;i++) {
+					bWriter.write(line[i] + nextLine);
+					j = i + 1;
 				}
+				bWriter.write(line[j]);
+				
 				bWriter.close();
 			}else {
 				
