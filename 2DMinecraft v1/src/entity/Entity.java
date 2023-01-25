@@ -11,7 +11,6 @@ public class Entity {
 	public String mainAction = "idle_left";
 
 	BufferedImage image;
-	BufferedImage[][] animations;
 	
 	int aniTick, aniIndex, aniSpeed = 30, aniCode;
 	int maxAniIndex;

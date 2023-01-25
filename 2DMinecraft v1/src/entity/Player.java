@@ -32,7 +32,8 @@ public class Player extends Entity{
 		y = 100;
 		speed = 2;
 	}
-	
+
+	BufferedImage[][] animations;
 	public void loadAnimations() {
 		animations = new BufferedImage[4][6];
 		

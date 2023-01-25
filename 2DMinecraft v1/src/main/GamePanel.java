@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import blocks.BlockManager;
 import entity.Player;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -16,11 +17,12 @@ public class GamePanel extends JPanel implements Runnable{
 	final int scale = 3;
 	
 	public final int tileSize = originalTileSize * scale;
-	final int maxScreenCol = 16;
-	final int maxScreenRow = 12;
+	public final int maxScreenCol = 16;
+	public final int maxScreenRow = 12;
 	final int screenWidth = maxScreenCol * tileSize;
 	final int screenHeight = maxScreenRow * tileSize;
 	
+	BlockManager blockM = new BlockManager(this);
 	KeyHandler KeyH = new KeyHandler();
 	Thread gameThread;
 	final int FPS_SET = 120;
@@ -102,6 +104,7 @@ public class GamePanel extends JPanel implements Runnable{
 		
 		Graphics2D g2d = (Graphics2D)g;
 		
+		blockM.draw(g2d);
 		player.draw(g2d);
 		
 		g2d.dispose();
