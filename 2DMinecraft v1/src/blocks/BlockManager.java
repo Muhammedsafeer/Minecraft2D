@@ -2,9 +2,12 @@ package blocks;
 
 
 import java.awt.Graphics2D;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
@@ -14,6 +17,7 @@ public class BlockManager {
 
 	GamePanel gp;
 	Block[] block;
+	int mapTileNum[][];
 	
 	String blocksPos[][];
 	int chunkX = 16;
@@ -26,6 +30,7 @@ public class BlockManager {
 		this.gp = gp;
 		
 		block = new Block[999];
+		mapTileNum = new int [gp.maxWorldCol][gp.maxWorldRow];
 		
 		blocksPos = new String[chunkX][chunkY];
 		
@@ -41,28 +46,57 @@ public class BlockManager {
 			block[0].block = "minecraft2d:air";
 			
 			block[1] = new Block();
-			block[1].image = ImageIO.read(getClass().getResource("/blocks/grass_block_plain.png"));
+			block[1].image = ImageIO.read(getClass().getResource("/blocks/grass_block.png"));
 			block[1].block = "minecraft2d:grass_block";
+			
+			block[2] = new Block();
+			block[2].image = ImageIO.read(getClass().getResource("/blocks/dirt.png"));
+			block[2].block = "minecraft2d:dirt";
 			
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
+	public void loadMap() {
+		try {
+			
+			InputStream is = getClass().getResourceAsStream("/world1/chunk0.txt");
+			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			
+			int col = 0;
+			int row = 0;
+			while (col < chunkX && row < chunkY) {
+				
+				String line = br.readLine();
+				
+				while (col < chunkX) {
+					
+					String numbers[] = line.split(" ");
+					
+					int num = Integer.parseInt(numbers[col]);
+					
+					mapTileNum[col][row] = num;
+					col++;
+				}
+				if (col == chunkX) {
+					col = 0;
+					row++;
+				}
+			}
+			br.close();
+			System.out.println("Map Loaded");
+			
+		}catch (Exception e) {
+			System.out.println("Map didn't Load");
+		}
+	}
 	
 	public void generatingWorld() {
-//		int col = 0;
-//		int row = 0;
-//		while (col < chunkX && row < chunkY) {
-//			
-//			blocks[col][row] = block[1].block;
-//			
-//			col++;
-//			if (col == gp.maxScreenCol) {
-//				row++;
-//				col = 0;
-//			}
-//		}
+		generateGrassBlock();
+		generateDirtBlock();
 		
+	}
+	public void generateGrassBlock() {
 		int _currentSurface = 10;
 		int _currentXCol = 8;
 		int _previousSurface = 10;
@@ -110,9 +144,26 @@ public class BlockManager {
 			previousCol++;
 			blockTimes--;
 		}
-		
-		
 	}
+	public void generateDirtBlock() {
+		int col = 0;
+		int row = 0;
+		while (col < chunkX && row < chunkY) {
+			if (blocksPos[col][row] == block[1].block) {
+				blocksPos[col][row + 1] = block[2].block;
+				blocksPos[col][row + 2] = block[2].block;
+				blocksPos[col][row + 3] = block[2].block;
+				blocksPos[col][row + 4] = block[2].block;
+			}
+			
+			col++;
+			if (col == chunkX) {
+				col = 0;
+				row++;
+			}
+		}
+	}
+	
 	public void changeToString() {
 		int col = 0;
 		int row = 0;
@@ -121,6 +172,7 @@ public class BlockManager {
 			if (blocksPos[col][row] == null) { line[row] += "0 "; }
 			if (blocksPos[col][row] != null) {
 				if (blocksPos[col][row] == block[1].block) { line[row] += "1 "; }
+				if (blocksPos[col][row] == block[2].block) { line[row] += "2 "; }
 			}
 			
 			col++;
@@ -147,7 +199,6 @@ public class BlockManager {
 		// REMOVING NULL
 		for (int i=0;i<line.length;i++) {
 			line [i] = line[i].substring(4, 35);
-			System.out.println(line[i]);
 		}
 	}
 	public void checkChunk() {
@@ -157,9 +208,10 @@ public class BlockManager {
 		
 		// SAVING TO TXT FILE
 		try {
-
+			
 			chunk[201] = new File("saves/world1/chunk0.txt");
 			if (chunk[201].createNewFile()) {
+				System.out.println("Creating Map");
 				generatingWorld();
 				changeToString();
 				
@@ -174,8 +226,12 @@ public class BlockManager {
 				bWriter.write(line[j]);
 				
 				bWriter.close();
+				System.out.println("Created Map");
+				System.out.println("Loading Map");
+				loadMap();
 			}else {
-				
+				System.out.println("Map Already Created, Loading Map");
+				loadMap();
 			}
 			
 		}catch(IOException e) {
@@ -186,15 +242,28 @@ public class BlockManager {
 	public void draw(Graphics2D g2d) {
 		int col = 0;
 		int row = 0;
-		while (col < chunkX && row < chunkY) {
+		while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
 			
-			if (blocksPos[col][row] != null) {
-				if (blocksPos[col][row] == "minecraft2d:grass_block") { g2d.drawImage(block[1].image, col * gp.tileSize, row * gp.tileSize, gp.tileSize, gp.tileSize, null); }
+			int blockNum = mapTileNum[col][row];
+			
+			int worldX = col * gp.tileSize;
+			int worldY = row * gp.tileSize;
+			int screenX = worldX - gp.player.worldX + gp.player.screenX;
+			int screenY = worldY - gp.player.worldY + gp.player.screenY;
+			
+			if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+				worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+				worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+				worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
+
+				g2d.drawImage(block[blockNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 			}
+			
 			col++;
-			if (col == chunkX) {
-				row++;
+			
+			if (col == gp.maxWorldCol) {
 				col = 0;
+				row++;
 			}
 		}
 	}

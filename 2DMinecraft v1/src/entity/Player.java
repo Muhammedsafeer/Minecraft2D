@@ -15,11 +15,17 @@ public class Player extends Entity{
 	GamePanel gp;
 	KeyHandler KeyH;
 	
+	public final int screenX;
+	public final int screenY;
+	
 	
 	public Player(GamePanel gp, KeyHandler KeyH) {
 		
 		this.gp = gp;
 		this.KeyH = KeyH;
+		
+		screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
+		screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 		
 		setDefualtValues();
 		ImportImage();
@@ -28,8 +34,8 @@ public class Player extends Entity{
 	
 	public void setDefualtValues() {
 		
-		x = 100;
-		y = 100;
+		worldX = (9 * gp.tileSize) - (gp.tileSize / 2);
+		worldY = 10 * gp.tileSize;
 		speed = 2;
 	}
 
@@ -99,26 +105,26 @@ public class Player extends Entity{
 		
 		if (KeyH.upPressed == true) {
 			
-			y -= speed;
+			worldY -= speed;
 			
 		}
 		if (KeyH.downPressed == true) {
 			
-			y += speed;
+			worldY += speed;
 			
 		}
 		if (KeyH.leftPressed == true) {
 			
 			currentAction = "move_right";
 			mainAction = "right";
-			x -= speed;
+			worldX -= speed;
 			
 		}if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "right") { currentAction = "idle_right"; }
 		if (KeyH.rightPressed == true) {
 			
 			currentAction = "move_left";
 			mainAction = "left";
-			x += speed;
+			worldX += speed;
 			
 		}if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "left") { currentAction = "idle_left"; }
 		
@@ -126,7 +132,7 @@ public class Player extends Entity{
 
 	public void draw(Graphics2D g2d) {
 
-		g2d.drawImage(animations[aniCode][aniIndex], x, y, 64, 128, null);
+		g2d.drawImage(animations[aniCode][aniIndex], screenX, screenY, 64, 128, null);
 	}
 }
 
