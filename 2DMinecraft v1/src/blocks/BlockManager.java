@@ -31,9 +31,9 @@ public class BlockManager {
 	File chunk[];
 	
 	int currentSurface = 195;
-	int currentXCol = 9;
+	int currentXCol = 9 + 32;
 	int _currentSurface = 195;
-	int _currentXCol = 8;
+	int _currentXCol = 8 + 32;
 	
 	boolean createdChunk0Grass_block = false;
 	boolean createdChunk0Dirt = false;
@@ -84,7 +84,7 @@ public class BlockManager {
 			int _blockDirection = (int)(Math.random() * 3);
 
 			int blockTimes = (int)(Math.random() * 5);
-			while (_currentXCol > -1) {
+			while (_currentXCol > -1 + 32) {
 				blocksPos[_currentXCol][_currentSurface] = block[1].block;
 				if (blockTimes <= 0) {
 					blockTimes = (int)(Math.random() * 5);
@@ -102,7 +102,7 @@ public class BlockManager {
 			
 			int blockDirection = (int)(Math.random() * 3);
 			
-			while (currentXCol < chunkX) {
+			while (currentXCol < chunkX + 32) {
 				
 				blocksPos[currentXCol][currentSurface] = block[1].block;
 				
@@ -120,13 +120,61 @@ public class BlockManager {
 			currentChunks[2] = "0";
 			createdChunk0Grass_block = true;
 		}
+		if (currentChunks[1] == null) {
+			if (currentChunks[2].contains("-") || currentChunks[2] == "0") {
+				
+				int _blockDirection = (int)(Math.random() * 3);
+
+				int blockTimes = (int)(Math.random() * 5);
+				while (_currentXCol > -17 + 32) {
+					blocksPos[_currentXCol][_currentSurface] = block[1].block;
+					if (blockTimes <= 0) {
+						blockTimes = (int)(Math.random() * 5);
+						_blockDirection = (int)(Math.random() * 3);
+					}
+					if (_blockDirection == 0) { 
+						_currentSurface += 1;
+					}
+					if (_blockDirection == 2) {
+						_currentSurface -= 1;
+					}
+					_currentXCol--;
+					blockTimes--;
+				}
+				currentChunks[1] = "-1";
+			}
+		}
+		if (currentChunks[0] == null) {
+			if (currentChunks[1].contains("-") || currentChunks[1] == "0") {
+				
+				int _blockDirection = (int)(Math.random() * 3);
+
+				int blockTimes = (int)(Math.random() * 5);
+				while (_currentXCol > -33 + 32) {
+					blocksPos[_currentXCol][_currentSurface] = block[1].block;
+					if (blockTimes <= 0) {
+						blockTimes = (int)(Math.random() * 5);
+						_blockDirection = (int)(Math.random() * 3);
+					}
+					if (_blockDirection == 0) { 
+						_currentSurface += 1;
+					}
+					if (_blockDirection == 2) {
+						_currentSurface -= 1;
+					}
+					_currentXCol--;
+					blockTimes--;
+				}
+				currentChunks[0] = "-2";
+			}
+		}
 		if (currentChunks[3] == null) {
 			if (currentChunks[2].contains("+") || currentChunks[2] == "0") {
 				
 				int blockDirection = (int)(Math.random() * 3);
 				int blockTimes = (int)(Math.random() * 5);
 				
-				while (currentXCol < chunkX * 2) {
+				while (currentXCol < (chunkX * 2) + 32) {
 					
 					blocksPos[currentXCol][currentSurface] = block[1].block;
 					
@@ -150,7 +198,7 @@ public class BlockManager {
 				int blockDirection = (int)(Math.random() * 3);
 				int blockTimes = (int)(Math.random() * 5);
 				
-				while (currentXCol < chunkX * 3) {
+				while (currentXCol < (chunkX * 3) + 32) {
 					
 					blocksPos[currentXCol][currentSurface] = block[1].block;
 					
@@ -165,6 +213,7 @@ public class BlockManager {
 					System.out.println(currentXCol);
 					blockTimes--;
 				}
+				currentChunks[4] = "+2";
 			}
 		}
 		
