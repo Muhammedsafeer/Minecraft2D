@@ -23,6 +23,7 @@ public class BlockManager {
 	public String blocksPos[][];
 	int chunkX = 16;
 	int chunkY = 256;
+	public int maxChunks = chunkX * 5;
 	
 	int chunksNum = 1;
 	
@@ -34,18 +35,22 @@ public class BlockManager {
 	int _currentSurface = 195;
 	int _currentXCol = 8;
 	
+	boolean createdChunk0Grass_block = false;
+	boolean createdChunk0Dirt = false;
+	
+	String[] currentChunks = new String[5];
+	
 	public BlockManager(GamePanel gp) {
 		this.gp = gp;
 		
 		block = new Block[999];
 		mapTileNum = new int [gp.maxWorldCol][gp.maxWorldRow];
 		
-		blocksPos = new String[chunkX][chunkY];
+		blocksPos = new String[maxChunks][chunkY];
 
 		
 		getBlockImage();
-		generateGrassBlock();
-		generateDirtBlock();
+		System.out.println(currentChunks[4]);
 		
 	}
 	
@@ -70,61 +75,119 @@ public class BlockManager {
 	}
 
 	// GENERATE WORLD
+	public void generateWorld() {
+		generateGrassBlock();
+		generateDirtBlock();
+	}
 	public void generateGrassBlock() {
-		int _blockDirection = (int)(Math.random() * 3);
-		
-		while (_currentXCol > -1) {
-			blocksPos[_currentXCol][_currentSurface] = block[1].block;
+		if (createdChunk0Grass_block == false) {
+			int _blockDirection = (int)(Math.random() * 3);
+
 			int blockTimes = (int)(Math.random() * 5);
-			if (blockTimes <= 0) {
-				_blockDirection = (int)(Math.random() * 3);
+			while (_currentXCol > -1) {
+				blocksPos[_currentXCol][_currentSurface] = block[1].block;
+				if (blockTimes <= 0) {
+					blockTimes = (int)(Math.random() * 5);
+					_blockDirection = (int)(Math.random() * 3);
+				}
+				if (_blockDirection == 0) { 
+					_currentSurface += 1;
+				}
+				if (_blockDirection == 2) {
+					_currentSurface -= 1;
+				}
+				_currentXCol--;
+				blockTimes--;
 			}
-			if (_blockDirection == 0) { 
-				_currentSurface += 1;
+			
+			int blockDirection = (int)(Math.random() * 3);
+			
+			while (currentXCol < chunkX) {
+				
+				blocksPos[currentXCol][currentSurface] = block[1].block;
+				
+				if (blockTimes <= 0) {
+					blockTimes = (int)(Math.random() * 5);
+					blockDirection = (int)(Math.random() * 3);
+				}
+				if (blockDirection == 0) { currentSurface += 1; }
+				if (blockDirection == 2) { currentSurface -= 1; }
+				
+				
+				currentXCol++;
+				blockTimes--;
 			}
-			if (_blockDirection == 2) {
-				_currentSurface -= 1;
-			}
-			_currentXCol--;
-			blockTimes--;
+			currentChunks[2] = "0";
+			createdChunk0Grass_block = true;
 		}
-		
-		int blockDirection = (int)(Math.random() * 3);
-		
-		while (currentXCol < chunkX) {
-			
-			blocksPos[currentXCol][currentSurface] = block[1].block;
-			System.out.println(currentXCol + " " + currentSurface);
-			
-			int blockTimes = (int)(Math.random() * 5);
-			if (blockTimes <= 0) {
-				blockDirection = (int)(Math.random() * 3);
+		if (currentChunks[3] == null) {
+			if (currentChunks[2].contains("+") || currentChunks[2] == "0") {
+				
+				int blockDirection = (int)(Math.random() * 3);
+				int blockTimes = (int)(Math.random() * 5);
+				
+				while (currentXCol < chunkX * 2) {
+					
+					blocksPos[currentXCol][currentSurface] = block[1].block;
+					
+					if (blockTimes <= 0) {
+						blockTimes = (int)(Math.random() * 5);
+						blockDirection = (int)(Math.random() * 3);
+					}
+					if (blockDirection == 0) { currentSurface += 1; }
+					if (blockDirection == 2) { currentSurface -= 1; }
+					
+					currentXCol++;
+					System.out.println(currentXCol);
+					blockTimes--;
+				}
+				currentChunks[3] = "+1";
 			}
-			if (blockDirection == 0) { currentSurface += 1; }
-			if (blockDirection == 2) { currentSurface -= 1; }
-			
-			
-			currentXCol++;
-			blockTimes--;
+		}
+		if (currentChunks[4] == null) {
+			if (currentChunks[3].contains("+") || currentChunks[3] == "0") {
+				
+				int blockDirection = (int)(Math.random() * 3);
+				int blockTimes = (int)(Math.random() * 5);
+				
+				while (currentXCol < chunkX * 3) {
+					
+					blocksPos[currentXCol][currentSurface] = block[1].block;
+					
+					if (blockTimes <= 0) {
+						blockTimes = (int)(Math.random() * 5);
+						blockDirection = (int)(Math.random() * 3);
+					}
+					if (blockDirection == 0) { currentSurface += 1; }
+					if (blockDirection == 2) { currentSurface -= 1; }
+					
+					currentXCol++;
+					System.out.println(currentXCol);
+					blockTimes--;
+				}
+			}
 		}
 		
 	}
 	public void generateDirtBlock() {
-		int col = 0;
-		int row = 0;
-		while (col < chunkX && row < chunkY) {
-			if (blocksPos[col][row] == block[1].block) {
-				blocksPos[col][row + 1] = block[2].block;
-				blocksPos[col][row + 2] = block[2].block;
-				blocksPos[col][row + 3] = block[2].block;
-				blocksPos[col][row + 4] = block[2].block;
+		if (createdChunk0Dirt == false) {
+			int col = 0;
+			int row = 0;
+			while (col < maxChunks && row < chunkY) {
+				if (blocksPos[col][row] == block[1].block) {
+					blocksPos[col][row + 1] = block[2].block;
+					blocksPos[col][row + 2] = block[2].block;
+					blocksPos[col][row + 3] = block[2].block;
+					blocksPos[col][row + 4] = block[2].block;
+				}
+				
+				col++;
+				if (col == maxChunks) {
+					col = 0;
+					row++;
+				}
 			}
-			
-			col++;
-			if (col == chunkX) {
-				col = 0;
-				row++;
-			}
+			createdChunk0Dirt = true;
 		}
 	}
 	
@@ -230,9 +293,10 @@ public class BlockManager {
 //	}
 	
 	public void draw(Graphics2D g2d) {
+		generateWorld();
 		int col = 0;
 		int row = 0;
-		while (col < chunkX && row < chunkY) {
+		while (col < maxChunks && row < chunkY) {
 			
 			
 			int worldX = col * gp.tileSize;
@@ -256,7 +320,7 @@ public class BlockManager {
 			
 			col++;
 			
-			if (col == chunkX) {
+			if (col == maxChunks) {
 				col = 0;
 				row++;
 			}
