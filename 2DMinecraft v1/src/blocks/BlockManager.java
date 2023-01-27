@@ -17,14 +17,22 @@ public class BlockManager {
 
 	GamePanel gp;
 	Block[] block;
+	
 	int mapTileNum[][];
 	
-	String blocksPos[][];
+	public String blocksPos[][];
 	int chunkX = 16;
-	int chunkY = 73;
+	int chunkY = 256;
 	
-	String line[] = new String[73];
+	int chunksNum = 1;
+	
+	String line[] = new String[256];
 	File chunk[];
+	
+	int currentSurface = 195;
+	int currentXCol = 9;
+	int _currentSurface = 195;
+	int _currentXCol = 8;
 	
 	public BlockManager(GamePanel gp) {
 		this.gp = gp;
@@ -33,9 +41,12 @@ public class BlockManager {
 		mapTileNum = new int [gp.maxWorldCol][gp.maxWorldRow];
 		
 		blocksPos = new String[chunkX][chunkY];
+
 		
 		getBlockImage();
-		checkChunk();
+		generateGrassBlock();
+		generateDirtBlock();
+		
 	}
 	
 	public void getBlockImage() {
@@ -57,50 +68,9 @@ public class BlockManager {
 			e.printStackTrace();
 		}
 	}
-	public void loadMap() {
-		try {
-			
-			InputStream is = getClass().getResourceAsStream("/world1/chunk0.txt");
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			
-			int col = 0;
-			int row = 0;
-			while (col < chunkX && row < chunkY) {
-				
-				String line = br.readLine();
-				
-				while (col < chunkX) {
-					
-					String numbers[] = line.split(" ");
-					
-					int num = Integer.parseInt(numbers[col]);
-					
-					mapTileNum[col][row] = num;
-					col++;
-				}
-				if (col == chunkX) {
-					col = 0;
-					row++;
-				}
-			}
-			br.close();
-			System.out.println("Map Loaded");
-			
-		}catch (Exception e) {
-			System.out.println("Map didn't Load");
-		}
-	}
-	
-	public void generatingWorld() {
-		generateGrassBlock();
-		generateDirtBlock();
-		
-	}
+
+	// GENERATE WORLD
 	public void generateGrassBlock() {
-		int _currentSurface = 10;
-		int _currentXCol = 8;
-		int _previousSurface = 10;
-		int _previousCol = 8;
 		int _blockDirection = (int)(Math.random() * 3);
 		
 		while (_currentXCol > -1) {
@@ -111,39 +81,33 @@ public class BlockManager {
 			}
 			if (_blockDirection == 0) { 
 				_currentSurface += 1;
-				_previousSurface += 1;
 			}
 			if (_blockDirection == 2) {
 				_currentSurface -= 1;
-				_previousSurface -= 1;
 			}
 			_currentXCol--;
-			_previousCol--;
 			blockTimes--;
 		}
 		
-		int currentSurface = 10;
-		int currentXCol = 9;
-		int previousSurface = 10;
-		int previousCol = 9;
 		int blockDirection = (int)(Math.random() * 3);
 		
 		while (currentXCol < chunkX) {
 			
 			blocksPos[currentXCol][currentSurface] = block[1].block;
+			System.out.println(currentXCol + " " + currentSurface);
 			
 			int blockTimes = (int)(Math.random() * 5);
 			if (blockTimes <= 0) {
 				blockDirection = (int)(Math.random() * 3);
 			}
-			if (blockDirection == 0) { currentSurface += 1; previousSurface += 1; }
-			if (blockDirection == 2) { currentSurface -= 1; previousSurface -= 1; }
+			if (blockDirection == 0) { currentSurface += 1; }
+			if (blockDirection == 2) { currentSurface -= 1; }
 			
 			
 			currentXCol++;
-			previousCol++;
 			blockTimes--;
 		}
+		
 	}
 	public void generateDirtBlock() {
 		int col = 0;
@@ -164,87 +128,112 @@ public class BlockManager {
 		}
 	}
 	
-	public void changeToString() {
-		int col = 0;
-		int row = 0;
-		while (col < chunkX && row < chunkY) {
-			
-			if (blocksPos[col][row] == null) { line[row] += "0 "; }
-			if (blocksPos[col][row] != null) {
-				if (blocksPos[col][row] == block[1].block) { line[row] += "1 "; }
-				if (blocksPos[col][row] == block[2].block) { line[row] += "2 "; }
-			}
-			
-			col++;
-			if (col >=chunkX) {
-				col = 0;
-				row++;
-			}
-		}
-		
-		// REMOVING NULL
-//		int lineX = 0;
-//		int lineY = 0;
-//		while (lineX < chunkX && lineY < chunkY) {
+//	public void loadMap() {
+//		try {
+//			InputStream is = getClass().getResourceAsStream("/world1/chunk" + chunksNum +".txt");
+//			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 //			
-//			line[lineY].substring(0, 3);
+//			int col = 0;
+//			int row = 0;
+//			while (col < chunkX && row < chunkY) {
+//				
+//				String line = br.readLine();
+//				
+//				while (col < chunkX) {
+//					
+//					String numbers[] = line.split(" ");
+//					
+//					int num = Integer.parseInt(numbers[col]);
+//					
+//					mapTileNum[col][row] = num;
+//					col++;
+//				}
+//				if (col == chunkX) {
+//					col = 0;
+//					row++;
+//				}
+//			}
+//			br.close();
+//			is.close();
 //			
-//			lineX++;
-//			if (lineX >=chunkX) {
-//				lineX = 0;
-//				lineY++;
+//		}catch (Exception e) {
+//			System.out.println("Map didn't Load");
+//			e.printStackTrace();
+//		}
+//	}
+
+
+	
+//	public void changeToString() {
+//		
+//		
+//		int col = 0;
+//		int row = 0;
+//		while (col < chunkX && row < chunkY) {
+//			
+//			if (blocksPos[col][row] == null) { line[row] += "0 "; }
+//			if (blocksPos[col][row] != null) {
+//				if (blocksPos[col][row] == block[1].block) { line[row] += "1 "; }
+//				if (blocksPos[col][row] == block[2].block) { line[row] += "2 "; }
+//			}
+//			
+//			col++;
+//			if (col >=chunkX) {
+//				col = 0;
+//				row++;
 //			}
 //		}
-		
-		// REMOVING NULL
-		for (int i=0;i<line.length;i++) {
-			line [i] = line[i].substring(4, 35);
-		}
-	}
-	public void checkChunk() {
-		
-		chunk = new File[401];
-		
-		
-		// SAVING TO TXT FILE
-		try {
-			
-			chunk[201] = new File("saves/world1/chunk0.txt");
-			if (chunk[201].createNewFile()) {
-				System.out.println("Creating Map");
-				generatingWorld();
-				changeToString();
-				
-				FileWriter bWriter = new FileWriter("saves/world1/chunk0.txt");
-				String nextLine = "\n";
-				
-				int j = 0;
-				for (int i=0;i<line.length-1;i++) {
-					bWriter.write(line[i] + nextLine);
-					j = i + 1;
-				}
-				bWriter.write(line[j]);
-				
-				bWriter.close();
-				System.out.println("Created Map");
-				System.out.println("Loading Map");
-				loadMap();
-			}else {
-				System.out.println("Map Already Created, Loading Map");
-				loadMap();
-			}
-			
-		}catch(IOException e) {
-			
-		}
-	}
+//		
+//		// REMOVING NULL
+//		for (int i=0;i<line.length;i++) {
+//			line [i] = line[i].substring(4, 35);
+//			System.out.println(line[i]);
+//		}
+//	}
+//	public void checkChunk() {
+//		
+//		chunk = new File[401];
+//		
+//		
+//		// SAVING TO TXT FILE
+//		try {
+//			
+//			chunk[201 + chunksNum] = new File("saves/world1/chunk" + chunksNum +".txt");
+//			if (chunk[201 + chunksNum].createNewFile()) {
+//				System.out.println("Creating Map");
+//				
+//				generateGrassBlock();
+//				generateDirtBlock();
+//				changeToString();
+//				
+//				FileWriter bWriter = new FileWriter("saves/world1/chunk" + chunksNum + ".txt");
+//				String nextLine = "\n";
+//				
+//				int j = 0;
+//				for (int i=0;i<line.length-1;i++) {
+//					bWriter.write(line[i] + nextLine);
+//					j = i + 1;
+//				}
+//				bWriter.write(line[j]);
+//				
+//				bWriter.close();
+//				System.out.println("Created Map");
+//				System.out.println("Loading Map");
+//
+//			}else {
+//				System.out.println("Map Already Created, Loading Map");
+//			}
+//			
+//		}catch(IOException e) {
+//			
+//		}
+//	}
 	
 	public void draw(Graphics2D g2d) {
 		int col = 0;
 		int row = 0;
-		while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
+		while (col < chunkX && row < chunkY) {
 			
-			int blockNum = mapTileNum[col][row];
 			
 			int worldX = col * gp.tileSize;
 			int worldY = row * gp.tileSize;
@@ -256,12 +245,18 @@ public class BlockManager {
 				worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
 				worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
 
-				g2d.drawImage(block[blockNum].image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+				if (blocksPos[col][row] != null) {
+
+					
+					if (blocksPos[col][row] == "minecraft2d:grass_block") { g2d.drawImage(block[1].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+					if (blocksPos[col][row] == "minecraft2d:dirt") { g2d.drawImage(block[2].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+				}
 			}
+			
 			
 			col++;
 			
-			if (col == gp.maxWorldCol) {
+			if (col == chunkX) {
 				col = 0;
 				row++;
 			}
