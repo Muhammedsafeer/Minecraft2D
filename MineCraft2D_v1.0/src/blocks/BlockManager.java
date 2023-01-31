@@ -2,13 +2,7 @@ package blocks;
 
 
 import java.awt.Graphics2D;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -18,23 +12,29 @@ public class BlockManager {
 
     GamePanel gp;
     Block[] block;
-    Chunk[] chunk;
 
-    int currentCol = 9;
+    int currentCol = 89;
     int currentRow = 195;
-    int _currentCol = 8;
+    int _currentCol = 88;
     int _currentRow = 195;
 
     int chunkCol = 16;
     int chunkRow = 256;
 
-    String blocksPos[][] = new String[16 * 5][256];
+    int chunks = 5;
+    int negativeChunks = 5;
+
+    int worldCol = chunkCol * ((chunks + negativeChunks) + 1);
+    int worldRow = chunkRow;
+
+
+     String blocksPos[][] = new String[worldCol][worldRow];
 
     public BlockManager(GamePanel gp) {
         this.gp = gp;
 
         block = new Block[999];
-        chunk = new Chunk[5];
+
 
 
         getBlockImage();
@@ -46,18 +46,27 @@ public class BlockManager {
 
             block[0] = new Block();
             block[0].is = getClass().getResourceAsStream("/blocks/air.png");
+            assert block[0].is != null;
             block[0].image = ImageIO.read(block[0].is);
             block[0].block = "minecraft2d:air";
 
             block[1] = new Block();
             block[1].is = getClass().getResourceAsStream("/blocks/grass_block_plain.png");
+            assert block[1].is != null;
             block[1].image = ImageIO.read(block[1].is);
             block[1].block = "minecraft2d:grass_block";
 
             block[2] = new Block();
             block[2].is = getClass().getResourceAsStream("/blocks/dirt.png");
+            assert block[2].is != null;
             block[2].image = ImageIO.read(block[2].is);
             block[2].block = "minecraft2d:dirt";
+
+            block[3] = new Block();
+            block[3].is = getClass().getResourceAsStream("/blocks/stone.png");
+            assert block[3].is != null;
+            block[3].image = ImageIO.read(block[3].is);
+            block[3].block = "minecraft2d:stone";
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -66,43 +75,84 @@ public class BlockManager {
 
     //GENERATING WORLD
     public void generateWorld() {
-        if (chunk[2] == null) {
-            chunk[2] = new Chunk();
-            if (chunk[2].generated == false) {
+        generateGrassBlock();
+        generateDirtBlock();
+        generateStoneBlock();
+    }
 
-                int blockDirection = (int)(Math.random() * 3);
-                int blockTimes = (int)(Math.random() * 5);
+    public void generateGrassBlock() {
+        int blockDirection;
+        int blockTimes;
+        while (currentCol < worldCol  && currentRow < worldRow) {
 
-                while (_currentCol > -1) {
-                    blocksPos[_currentCol][_currentRow] = block[1].block;
-                    if (blockTimes <= 0) {
-                        blockTimes = (int)(Math.random() * 5);
-                        blockDirection = (int)(Math.random() * 3);
-                    }
-                    if (blockDirection == 0) {
-                        _currentRow += 1;
-                    }
-                    if (blockDirection == 2) {
-                        _currentRow -= 1;
-                    }
-                    _currentCol--;
-                    blockTimes--;
+            blocksPos[currentCol][currentRow] = "minecraft2d:grass_block";
+            blockDirection = (int)(Math.random() * 3);
+            blockTimes = (int)(Math.random() * 8);
+            if (blockDirection == 0) {
+                currentRow--;
+            }
+            if (blockDirection == 2) {
+                currentRow++;
+            }
+            if (blockTimes <= 0) {
+                blockDirection = (int)(Math.random() * 3);
+                blockTimes = (int)(Math.random() * 8);
+            }
+
+            blockTimes--;
+            currentCol++;
+        }
+        while (_currentCol > -1  && _currentRow < worldRow) {
+            blocksPos[_currentCol][_currentRow] = "minecraft2d:grass_block";
+            blockDirection = (int)(Math.random() * 3);
+            blockTimes = (int)(Math.random() * 8);
+            if (blockDirection == 0) {
+                _currentRow--;
+            }
+            if (blockDirection == 2) {
+                _currentRow++;
+            }
+            if (blockTimes <= 0) {
+                blockDirection = (int)(Math.random() * 3);
+                blockTimes = (int)(Math.random() * 8);
+            }
+
+            blockTimes--;
+            _currentCol--;
+        }
+    }
+    public void generateDirtBlock() {
+        int col = 0;
+        int row = 0;
+        while (col < worldCol && row < worldRow) {
+            if (blocksPos[col][row] == block[1].block) {
+                blocksPos[col][row + 1] = block[2].block;
+                blocksPos[col][row + 2] = block[2].block;
+                blocksPos[col][row + 3] = block[2].block;
+                blocksPos[col][row + 4] = block[2].block;
+            }
+            col++;
+            if (col == worldCol) {
+                col = 0;
+                row++;
+            }
+        }
+    }
+    public void generateStoneBlock() {
+        int col = 0;
+        int row = 0;
+        while (col < worldCol && row < worldRow) {
+            if (blocksPos[col][row] == block[2].block) {
+                int stoneRow = row + 4;
+                while (stoneRow <= worldRow - 1) {
+                    blocksPos[col][stoneRow] = block[3].block;
+                    stoneRow++;
                 }
-
-                while (currentCol < chunkCol) {
-
-                    blocksPos[currentCol][currentRow] = block[1].block;
-
-                    if (blockTimes <= 0) {
-                        blockTimes = (int)(Math.random() * 5);
-                        blockDirection = (int)(Math.random() * 3);
-                    }
-                    if (blockDirection == 0) { currentRow += 1; }
-                    if (blockDirection == 2) { currentRow -= 1; }
-
-                    currentCol++;
-                    blockTimes--;
-                }
+            }
+            col++;
+            if (col == worldCol) {
+                col = 0;
+                row++;
             }
         }
     }
@@ -110,41 +160,32 @@ public class BlockManager {
     public void draw(Graphics2D g2d) {
 
         generateWorld();
-
         int col = 0;
         int row = 0;
+        while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
+            int worldX = col * gp.tileSize;
+            int worldY = row * gp.tileSize;
+            int screenX = worldX - gp.player.worldX + gp.player.screenX;
+            int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
-        for (int i=0;i<chunk.length;i++) {
-            if (chunk[i] != null) {
-                col = i * 16;
-                while (col < chunkCol * chunk.length && row < chunkRow) {
+            if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
+                    worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
+                    worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
+                    worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
 
-                    int worldX = col * gp.tileSize;
-                    int worldY = row * gp.tileSize;
-                    int screenX = worldX - gp.player.worldX + gp.player.screenX;
-                    int screenY = worldY - gp.player.worldY + gp.player.screenY;
-
-                    if (worldX + gp.tileSize > gp.player.worldX - gp.player.screenX &&
-                            worldX - gp.tileSize < gp.player.worldX + gp.player.screenX &&
-                            worldY + gp.tileSize > gp.player.worldY - gp.player.screenY &&
-                            worldY - gp.tileSize < gp.player.worldY + gp.player.screenY) {
-
-                        if (blocksPos[col][row] != null) {
+                if (blocksPos[col][row] != null) {
 
 
-                            if (blocksPos[col][row] == "minecraft2d:grass_block") { g2d.drawImage(block[1].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
-                            if (blocksPos[col][row] == "minecraft2d:dirt") { g2d.drawImage(block[2].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
-                        }
-                    }
-
-                    col++;
-                    if (col == chunkCol * chunk.length) {
-                        col = i * 16;
-                        row++;
-                    }
+                    if (blocksPos[col][row] == "minecraft2d:grass_block") { g2d.drawImage(block[1].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (blocksPos[col][row] == "minecraft2d:dirt") { g2d.drawImage(block[2].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (blocksPos[col][row] == "minecraft2d:stone") { g2d.drawImage(block[3].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
                 }
             }
+            col++;
+            if (col == gp.maxWorldCol) {
+                col = 0;
+                row++;
+            }
         }
-
     }
 }
