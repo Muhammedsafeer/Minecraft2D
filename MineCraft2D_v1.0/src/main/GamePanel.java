@@ -28,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable{
     Thread gameThread;
     final int FPS_SET = 120;
     final int UPS_SET = 120;
+    public CollisionChecker cChecker = new CollisionChecker(this);
     public Player player = new Player(this, KeyH);
 
     // World Settings

@@ -13,7 +13,7 @@ import main.GamePanel;
 public class BlockManager {
 
     GamePanel gp;
-    Block[] block;
+    public Block[] block;
 
     // Grass Generation Settings
     int currentCol = 89;
@@ -32,21 +32,28 @@ public class BlockManager {
     int worldCol = chunkCol * ((chunks + negativeChunks) + 1);
     int worldRow = chunkRow;
 
-    public boolean treeGenerated = false;
 
-    String blocksPos[][] = new String[worldCol][worldRow];
+    public String[][] blocksPos = new String[worldCol][worldRow];
+    public int[][] mapBlockNum = new int[worldCol][worldRow];
 
     public BlockManager(GamePanel gp) {
         this.gp = gp;
 
         block = new Block[999];
 
-
-
         getBlockImage();
-
         generateWorld();
 
+        for (int i = 0; i < blocksPos.length; i++) {
+            for (int j = 0; j < blocksPos[i].length; j++) {
+                if (blocksPos[i][j] == null) { mapBlockNum[i][j] = 0; }
+                if (blocksPos[i][j] == block[1].block) { mapBlockNum[i][j] = 1; }
+                if (blocksPos[i][j] == block[2].block) { mapBlockNum[i][j] = 2; }
+                if (blocksPos[i][j] == block[3].block) { mapBlockNum[i][j] = 3; }
+                if (blocksPos[i][j] == block[4].block) { mapBlockNum[i][j] = 4; }
+                if (blocksPos[i][j] == block[5].block) { mapBlockNum[i][j] = 5; }
+            }
+        }
     }
 
     public void getBlockImage() {
@@ -64,6 +71,7 @@ public class BlockManager {
             assert block[1].is != null;
             block[1].image = ImageIO.read(block[1].is);
             block[1].block = "minecraft2d:grass_block";
+            block[1].collision = true;
 
             // Dirt Block
             block[2] = new Block();
@@ -71,6 +79,7 @@ public class BlockManager {
             assert block[2].is != null;
             block[2].image = ImageIO.read(block[2].is);
             block[2].block = "minecraft2d:dirt";
+            block[2].collision = true;
 
             // Stone Block
             block[3] = new Block();
@@ -78,6 +87,7 @@ public class BlockManager {
             assert block[3].is != null;
             block[3].image = ImageIO.read(block[3].is);
             block[3].block = "minecraft2d:stone";
+            block[3].collision = true;
 
             // Oak Log
             block[4] = new Block();
@@ -102,6 +112,7 @@ public class BlockManager {
     //GENERATING WORLD
     public void generateWorld() {
         generateGrassBlock();
+        smoothenTerrain();
         generateDirtBlock();
         generateStoneBlock();
 
@@ -150,6 +161,54 @@ public class BlockManager {
             _currentCol--;
         }
     }
+    public void smoothenTerrain() {
+        int col = 0;
+        int row = 0;
+        while (col < worldCol && row < worldRow) {
+
+
+            if (blocksPos[col][row] == block[1].block && col < worldCol - 2) {
+                // ___   ___
+                //    |_|
+                if (blocksPos[col + 1][row] == null && blocksPos[col + 2][row] == block[1].block) {
+                    blocksPos[col + 1][row] = block[1].block;
+                    blocksPos[col + 1][row + 1] = null;
+                }
+
+                //    ___
+                // ___| |___
+                if (blocksPos[col + 1][row - 1] == block[1].block &&
+                    blocksPos[col + 2][row - 1] == null &&
+                    blocksPos[col + 2][row - 2] == null) {
+                    blocksPos[col + 1][row] = block[1].block;
+                    blocksPos[col + 1][row - 1] = null;
+                }
+
+            }
+
+            // For Bug Fixing
+            if (blocksPos[col][row] == block[1].block && col < worldCol - 1) {
+                if (blocksPos[col + 1][row + 1] == null &&
+                    blocksPos[col + 1][row] == null &&
+                    blocksPos[col + 1][row - 1] == null) {
+                    for (int i=0;i<worldRow;i++) {
+                        if (blocksPos[col + 1][i] == block[1].block) {
+                            blocksPos[col + 1][i] = null;
+                        }
+                    }
+                    blocksPos[col + 1][row] = block[1].block;
+                }
+            }
+
+
+
+            col++;
+            if (col == worldCol) {
+                col = 0;
+                row++;
+            }
+        }
+    }
     public void generateDirtBlock() {
         int col = 0;
         int row = 0;
@@ -172,10 +231,12 @@ public class BlockManager {
         int row = 0;
         while (col < worldCol && row < worldRow) {
             if (blocksPos[col][row] == block[2].block) {
-                int stoneRow = row + 4;
-                while (stoneRow <= worldRow - 1) {
-                    blocksPos[col][stoneRow] = block[3].block;
-                    stoneRow++;
+                int stoneRow[] = {row + 2, row + 3, row + 4};
+                int randomStoneRow = stoneRow[(int)(Math.random() * 3)];
+
+                while (randomStoneRow <= worldRow - 1) {
+                    blocksPos[col][randomStoneRow] = block[3].block;
+                    randomStoneRow++;
                 }
             }
             col++;
@@ -187,18 +248,24 @@ public class BlockManager {
     }
 
     public void generateTrees() {
-        if (treeGenerated == false) {
+        try {
+
             int col = 0;
             int row = 0;
             while (col < worldCol && row < worldRow) {
 
+
+
                 if (blocksPos[col][row] == block[1].block) {
                     int canGenerateTree = (int) (Math.random() * 50);
                     if (canGenerateTree == 0) {
-                        int treeType = (int) (Math.random() * 8);
-                        //if (treeType == 0) {
-                            // Generate Normal oak tree
+                        String treeType[] = {"Normal_Oak_Tree"/*, "Normal_Oak_Tree", "Normal_Oak_Tree", "Fancy_Oak_Tree", "Fancy_Oak_Tree", "Balloon_Oak_Tree"*/};
+                        String randomTreeType = treeType[(int) (Math.random() * treeType.length)];
 
+
+                        if (randomTreeType == "Normal_Oak_Tree") {
+
+                            // Generate Normal oak tree
                             //     _______
                             //    |       |
                             // ___|       |___
@@ -207,12 +274,10 @@ public class BlockManager {
                             //       | |
                             //       | |
                             //       |_|
-
                             // Log
                             blocksPos[col][row - 1] = block[4].block;
                             blocksPos[col][row - 2] = block[4].block;
                             blocksPos[col][row - 3] = block[4].block;
-
                             // Leaves
                             blocksPos[col - 2][row - 4] = block[5].block;
                             blocksPos[col - 1][row - 4] = block[5].block;
@@ -230,10 +295,27 @@ public class BlockManager {
                             blocksPos[col - 1][row - 7] = block[5].block;
                             blocksPos[col][row - 7] = block[5].block;
                             blocksPos[col + 1][row - 7] = block[5].block;
-
                             System.out.println("Tree Generated at" + col + " " + (row - 1));
-                        //}
+                        }
                     }
+                }
+                col++;
+                if (col == worldCol) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+
+        }catch (Exception e) {
+
+            int col = 0;
+            int row = 0;
+
+            while (col < worldCol && row < worldRow) {
+
+                if (blocksPos[col][row] == block[4].block || blocksPos[col][row] == block[5].block) {
+                    blocksPos[col][row] = null;
                 }
 
                 col++;
@@ -242,10 +324,11 @@ public class BlockManager {
                     row++;
                 }
             }
-            treeGenerated = true;
-        }
-    }
+            generateTrees();
 
+        }
+
+    }
     public void draw(Graphics2D g2d) {
 
         int col = 0;

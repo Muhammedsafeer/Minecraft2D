@@ -1,6 +1,6 @@
 package entity;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +26,8 @@ public class Player extends Entity{
 
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+
+        hitBox = new Rectangle(25, 40, 32, 80);
 
         setDefualtValues();
         ImportImage();
@@ -90,6 +92,8 @@ public class Player extends Entity{
 
         updateAnimationTick();
 
+        direction = "";
+
         if (currentAction == "idle_left") {
             aniCode = 0;
         }
@@ -104,33 +108,45 @@ public class Player extends Entity{
         }
 
         if (KeyH.upPressed == true) {
-
-            worldY -= speed;
-
+            direction = "up";
         }
         if (KeyH.downPressed == true) {
-
-            worldY += speed;
-
+            direction = "down";
         }
         if (KeyH.leftPressed == true) {
-
             currentAction = "move_right";
             mainAction = "right";
-            worldX -= speed;
-
-        }if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "right") { currentAction = "idle_right"; }
+            direction = "left";
+        }
         if (KeyH.rightPressed == true) {
-
             currentAction = "move_left";
             mainAction = "left";
-            worldX += speed;
+            direction = "right";
+        }
 
-        }if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "left") { currentAction = "idle_left"; }
+        if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "right") { currentAction = "idle_right"; }
+        if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "left") { currentAction = "idle_left"; }
+
+        collisionOn = false;
+        gp.cChecker.checkBlock(this);
+
+        if (collisionOn == false) {
+
+            switch (direction) {
+                case "up": worldY -= speed; break;
+                case "down": worldY += speed; break;
+                case "left": worldX -= speed; break;
+                case "right": worldX += speed; break;
+            }
+        }
 
     }
 
     public void draw(Graphics2D g2d) {
+
+        g2d.setColor(Color.RED);
+        g2d.drawRect(hitBox.x + screenX, hitBox.y + screenY, hitBox.width, hitBox.height);
+        g2d.setColor(null);
 
         g2d.drawImage(animations[aniCode][aniIndex], screenX, screenY, (int)83.2, (int)166.4, null);
     }
