@@ -34,7 +34,7 @@ public class Player extends Entity{
 
     public void setDefualtValues() {
 
-        worldX = 9 * gp.tileSize;
+        worldX = 8 + 64 * gp.tileSize;
         worldY = 195 * gp.tileSize;
         speed = 2;
     }
@@ -132,7 +132,7 @@ public class Player extends Entity{
 
     public void draw(Graphics2D g2d) {
 
-        g2d.drawImage(animations[aniCode][aniIndex], screenX, screenY, 64, 128, null);
+        g2d.drawImage(animations[aniCode][aniIndex], screenX, screenY, (int)83.2, (int)166.4, null);
     }
 }
 

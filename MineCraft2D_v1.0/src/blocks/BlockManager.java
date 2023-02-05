@@ -1,7 +1,9 @@
 package blocks;
 
 
-import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.image.ColorConvertOp;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -13,10 +15,13 @@ public class BlockManager {
     GamePanel gp;
     Block[] block;
 
+    // Grass Generation Settings
     int currentCol = 89;
     int currentRow = 195;
     int _currentCol = 88;
     int _currentRow = 195;
+
+    //Tree Generation Settings
 
     int chunkCol = 16;
     int chunkRow = 256;
@@ -27,8 +32,9 @@ public class BlockManager {
     int worldCol = chunkCol * ((chunks + negativeChunks) + 1);
     int worldRow = chunkRow;
 
+    public boolean treeGenerated = false;
 
-     String blocksPos[][] = new String[worldCol][worldRow];
+    String blocksPos[][] = new String[worldCol][worldRow];
 
     public BlockManager(GamePanel gp) {
         this.gp = gp;
@@ -39,34 +45,54 @@ public class BlockManager {
 
         getBlockImage();
 
+        generateWorld();
+
     }
 
     public void getBlockImage() {
         try {
-
+            // Air Block
             block[0] = new Block();
             block[0].is = getClass().getResourceAsStream("/blocks/air.png");
             assert block[0].is != null;
             block[0].image = ImageIO.read(block[0].is);
             block[0].block = "minecraft2d:air";
 
+            // Grass Block
             block[1] = new Block();
             block[1].is = getClass().getResourceAsStream("/blocks/grass_block_plain.png");
             assert block[1].is != null;
             block[1].image = ImageIO.read(block[1].is);
             block[1].block = "minecraft2d:grass_block";
 
+            // Dirt Block
             block[2] = new Block();
             block[2].is = getClass().getResourceAsStream("/blocks/dirt.png");
             assert block[2].is != null;
             block[2].image = ImageIO.read(block[2].is);
             block[2].block = "minecraft2d:dirt";
 
+            // Stone Block
             block[3] = new Block();
             block[3].is = getClass().getResourceAsStream("/blocks/stone.png");
             assert block[3].is != null;
             block[3].image = ImageIO.read(block[3].is);
             block[3].block = "minecraft2d:stone";
+
+            // Oak Log
+            block[4] = new Block();
+            block[4].is = getClass().getResourceAsStream("/blocks/oak_log.png");
+            assert block[4].is != null;
+            block[4].image = ImageIO.read(block[4].is);
+            block[4].block = "minecraft2d:oak_log";
+
+            // Oak Leaves
+            block[5] = new Block();
+            block[5].is = getClass().getResourceAsStream("/blocks/oak_leaves.png");
+            assert block[5].is != null;
+            block[5].image = ImageIO.read(block[5].is);
+            block[5].block = "minecraft2d:oak_leaves";
+
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -78,6 +104,8 @@ public class BlockManager {
         generateGrassBlock();
         generateDirtBlock();
         generateStoneBlock();
+
+        generateTrees();
     }
 
     public void generateGrassBlock() {
@@ -101,6 +129,7 @@ public class BlockManager {
 
             blockTimes--;
             currentCol++;
+
         }
         while (_currentCol > -1  && _currentRow < worldRow) {
             blocksPos[_currentCol][_currentRow] = "minecraft2d:grass_block";
@@ -157,12 +186,71 @@ public class BlockManager {
         }
     }
 
+    public void generateTrees() {
+        if (treeGenerated == false) {
+            int col = 0;
+            int row = 0;
+            while (col < worldCol && row < worldRow) {
+
+                if (blocksPos[col][row] == block[1].block) {
+                    int canGenerateTree = (int) (Math.random() * 50);
+                    if (canGenerateTree == 0) {
+                        int treeType = (int) (Math.random() * 8);
+                        //if (treeType == 0) {
+                            // Generate Normal oak tree
+
+                            //     _______
+                            //    |       |
+                            // ___|       |___
+                            // |             |
+                            // |_____________|
+                            //       | |
+                            //       | |
+                            //       |_|
+
+                            // Log
+                            blocksPos[col][row - 1] = block[4].block;
+                            blocksPos[col][row - 2] = block[4].block;
+                            blocksPos[col][row - 3] = block[4].block;
+
+                            // Leaves
+                            blocksPos[col - 2][row - 4] = block[5].block;
+                            blocksPos[col - 1][row - 4] = block[5].block;
+                            blocksPos[col][row - 4] = block[5].block;
+                            blocksPos[col + 1][row - 4] = block[5].block;
+                            blocksPos[col + 2][row - 4] = block[5].block;
+                            blocksPos[col - 2][row - 5] = block[5].block;
+                            blocksPos[col - 1][row - 5] = block[5].block;
+                            blocksPos[col][row - 5] = block[5].block;
+                            blocksPos[col + 1][row - 5] = block[5].block;
+                            blocksPos[col + 2][row - 5] = block[5].block;
+                            blocksPos[col - 1][row - 6] = block[5].block;
+                            blocksPos[col][row - 6] = block[5].block;
+                            blocksPos[col + 1][row - 6] = block[5].block;
+                            blocksPos[col - 1][row - 7] = block[5].block;
+                            blocksPos[col][row - 7] = block[5].block;
+                            blocksPos[col + 1][row - 7] = block[5].block;
+
+                            System.out.println("Tree Generated at" + col + " " + (row - 1));
+                        //}
+                    }
+                }
+
+                col++;
+                if (col == worldCol) {
+                    col = 0;
+                    row++;
+                }
+            }
+            treeGenerated = true;
+        }
+    }
+
     public void draw(Graphics2D g2d) {
 
-        generateWorld();
         int col = 0;
         int row = 0;
-        while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
+        while (col < worldCol && row < worldRow) {
             int worldX = col * gp.tileSize;
             int worldY = row * gp.tileSize;
             int screenX = worldX - gp.player.worldX + gp.player.screenX;
@@ -179,10 +267,12 @@ public class BlockManager {
                     if (blocksPos[col][row] == "minecraft2d:grass_block") { g2d.drawImage(block[1].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
                     if (blocksPos[col][row] == "minecraft2d:dirt") { g2d.drawImage(block[2].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
                     if (blocksPos[col][row] == "minecraft2d:stone") { g2d.drawImage(block[3].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (blocksPos[col][row] == "minecraft2d:oak_log") { g2d.drawImage(block[4].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (blocksPos[col][row] == "minecraft2d:oak_leaves") { g2d.drawImage(block[5].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
                 }
             }
             col++;
-            if (col == gp.maxWorldCol) {
+            if (col == worldCol) {
                 col = 0;
                 row++;
             }
