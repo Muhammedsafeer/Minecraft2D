@@ -9,20 +9,23 @@ import javax.imageio.ImageIO;
 
 import main.GamePanel;
 import main.KeyHandler;
+import main.MouseHandler;
 
 public class Player extends Entity{
 
     GamePanel gp;
     KeyHandler KeyH;
+    MouseHandler MouseH;
 
     public final int screenX;
     public final int screenY;
 
 
-    public Player(GamePanel gp, KeyHandler KeyH) {
+    public Player(GamePanel gp, KeyHandler KeyH, MouseHandler MouseH) {
 
         this.gp = gp;
         this.KeyH = KeyH;
+        this.MouseH = MouseH;
 
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -36,8 +39,8 @@ public class Player extends Entity{
 
     public void setDefualtValues() {
 
-        worldX = 8 + 64 * gp.tileSize;
-        worldY = 195 * gp.tileSize;
+        worldX = 89 * gp.tileSize;
+        worldY = 193 * gp.tileSize;
         speed = 2;
     }
 
@@ -55,7 +58,7 @@ public class Player extends Entity{
 
     public void ImportImage() {
 
-        InputStream is = getClass().getResourceAsStream("/player/Main.png");
+        InputStream is = getClass().getResourceAsStream("/minecraft2d/textures/entity/player/steve.png");
 
         try {
             image = ImageIO.read(is);
@@ -87,12 +90,16 @@ public class Player extends Entity{
         }
 
     }
+    int jumpFPU = 0;
 
     public void update() {
 
+
+
         updateAnimationTick();
 
-        direction = "";
+        directionX = "";
+        directionY = "";
 
         if (currentAction == "idle_left") {
             aniCode = 0;
@@ -107,37 +114,52 @@ public class Player extends Entity{
             aniCode = 3;
         }
 
-        if (KeyH.upPressed == true) {
-            direction = "up";
+        if (KeyH.upPressed == true && downCollisionOnY == true) {
+            directionY = "up";
         }
-        if (KeyH.downPressed == true) {
-            direction = "down";
+        if (directionY != "up") {
+            directionY = "down";
         }
         if (KeyH.leftPressed == true) {
             currentAction = "move_right";
             mainAction = "right";
-            direction = "left";
+            directionX = "left";
         }
         if (KeyH.rightPressed == true) {
             currentAction = "move_left";
             mainAction = "left";
-            direction = "right";
+            directionX = "right";
         }
 
         if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "right") { currentAction = "idle_right"; }
         if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "left") { currentAction = "idle_left"; }
 
-        collisionOn = false;
+        collisionOnX = false;
+        collisionOnY = false;
+        downCollisionOnY = false;
         gp.cChecker.checkBlock(this);
 
-        if (collisionOn == false) {
+        if (collisionOnX == false) {
 
-            switch (direction) {
-                case "up": worldY -= speed; break;
-                case "down": worldY += speed; break;
+            switch (directionX) {
                 case "left": worldX -= speed; break;
                 case "right": worldX += speed; break;
             }
+        }
+        if (collisionOnY == false) {
+            switch (directionY) {
+                case "up": jumpFPU = 5; break;
+            }
+        }
+
+        if (downCollisionOnY == false) {
+            switch (directionY) {
+                case "down": worldY += speed; break;
+            }
+        }
+        if (jumpFPU > 0 && collisionOnY == false) {
+            worldY -= 20;
+            jumpFPU--;
         }
 
     }

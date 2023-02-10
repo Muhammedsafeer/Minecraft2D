@@ -24,32 +24,17 @@ public class CollisionChecker {
 
         int blockNum1, blockNum2;
 
-        switch (entity.direction) {
-            case "up":
-                entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
-                blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityTopRow];
-                blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityTopRow];
 
-                if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                    entity.collisionOn = true;
-                }
-                break;
-            case "down":
-                entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
-                blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityBottomRow];
-                blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityBottomRow];
 
-                if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                    entity.collisionOn = true;
-                }
-                break;
+        switch (entity.directionX) {
+
             case "left":
                 entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
                 blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityTopRow];
                 blockNum2 = gp.blockM.mapBlockNum[entityLeftCol][entityBottomRow];
 
                 if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                    entity.collisionOn = true;
+                    entity.collisionOnX = true;
                 }
                 break;
             case "right":
@@ -58,7 +43,28 @@ public class CollisionChecker {
                 blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityBottomRow];
 
                 if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                    entity.collisionOn = true;
+                    entity.collisionOnX = true;
+                }
+                break;
+        }
+        switch (entity.directionY) {
+
+            case "up":
+                entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
+                blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityTopRow];
+                blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityTopRow];
+
+                if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
+                    entity.collisionOnY = true;
+                }
+                break;
+            case "down":
+                entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
+                blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityBottomRow];
+                blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityBottomRow];
+
+                if (gp.blockM.block[blockNum1].collision == true && gp.blockM.block[blockNum2].collision == true) {
+                    entity.downCollisionOnY = true;
                 }
                 break;
         }

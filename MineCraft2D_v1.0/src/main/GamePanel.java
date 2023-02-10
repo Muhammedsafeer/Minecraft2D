@@ -22,14 +22,25 @@ public class GamePanel extends JPanel implements Runnable{
     public final int screenWidth = maxScreenCol * tileSize;
     public final int screenHeight = maxScreenRow * tileSize;
 
+    public int mouseX;
+    public int mouseY;
+
+    public int mouseWorldX;
+    public int mouseWorldY;
+
+    public boolean mouseLeftPressed = false;
 
     public BlockManager blockM = new BlockManager(this);
     KeyHandler KeyH = new KeyHandler();
+    private MouseHandler mouseH = new MouseHandler();
+
     Thread gameThread;
+
     final int FPS_SET = 120;
     final int UPS_SET = 120;
+
     public CollisionChecker cChecker = new CollisionChecker(this);
-    public Player player = new Player(this, KeyH);
+    public Player player = new Player(this, KeyH, mouseH);
 
     // World Settings
     public int maxWorldCol = 176;
@@ -37,13 +48,14 @@ public class GamePanel extends JPanel implements Runnable{
     public int worldWidth = tileSize * maxWorldCol;
     public int worldHeight = tileSize * maxWorldRow;
 
-
     public GamePanel() {
 
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setDoubleBuffered(true);
         this.addKeyListener(KeyH);
+        this.addMouseListener(mouseH);
+        this.addMouseMotionListener(mouseH);
         this.setFocusable(true);
         startGameThread();
     }
@@ -101,6 +113,23 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void update() {
         player.update();
+
+        // Get mouse screen position
+        mouseX = mouseH.mouseX;
+        mouseY = mouseH.mouseY;
+
+        // Get mouse world position
+        mouseWorldX = mouseX + player.worldX - player.screenX;
+        mouseWorldY = mouseY + player.worldY - player.screenY;
+
+        // Detect mouse left click
+        if (mouseH.mouseLeftPressed) {
+            mouseLeftPressed = true;
+        } else {
+            mouseLeftPressed = false;
+        }
+
+        System.out.println(mouseLeftPressed);
     }
     public void paintComponent(Graphics g) {
 
