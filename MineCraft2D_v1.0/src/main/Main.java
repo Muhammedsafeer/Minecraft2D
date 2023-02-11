@@ -12,5 +12,11 @@ public class Main {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
+        // Hide the mouse cursor
+        frame.setCursor(frame.getToolkit().createCustomCursor(
+                new ImageIcon("").getImage(),
+                new java.awt.Point(),
+                "null"));
     }
 }

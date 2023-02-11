@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -40,12 +41,20 @@ public class BlockManager {
 
     BufferedImage widgets;
 
+    BufferedImage[] destroy_stage = new BufferedImage[10];
+
+    public int originalBlockBreakingTimer = 0;
+    public int blockBreakingTimer = 0;
+    public int currentBreakingBlockX;
+    public int currentBreakingBlockY;
+
     public BlockManager(GamePanel gp) {
         this.gp = gp;
 
         block = new Block[999];
 
         getBlockImage();
+        getBlockDestroyStage();
         generateWorld();
 
         for (int i = 0; i < blocksPos.length; i++) {
@@ -112,6 +121,36 @@ public class BlockManager {
 
 
         }catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getBlockDestroyStage(){
+        try{
+            InputStream destroy_stage_0 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_0.png");
+            InputStream destroy_stage_1 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_1.png");
+            InputStream destroy_stage_2 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_2.png");
+            InputStream destroy_stage_3 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_3.png");
+            InputStream destroy_stage_4 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_4.png");
+            InputStream destroy_stage_5 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_5.png");
+            InputStream destroy_stage_6 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_6.png");
+            InputStream destroy_stage_7 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_7.png");
+            InputStream destroy_stage_8 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_8.png");
+            InputStream destroy_stage_9 = getClass().getResourceAsStream("/minecraft2d/textures/block/destroy_stage_9.png");
+
+
+            destroy_stage[0] = ImageIO.read(destroy_stage_0);
+            destroy_stage[1] = ImageIO.read(destroy_stage_1);
+            destroy_stage[2] = ImageIO.read(destroy_stage_2);
+            destroy_stage[3] = ImageIO.read(destroy_stage_3);
+            destroy_stage[4] = ImageIO.read(destroy_stage_4);
+            destroy_stage[5] = ImageIO.read(destroy_stage_5);
+            destroy_stage[6] = ImageIO.read(destroy_stage_6);
+            destroy_stage[7] = ImageIO.read(destroy_stage_7);
+            destroy_stage[8] = ImageIO.read(destroy_stage_8);
+            destroy_stage[9] = ImageIO.read(destroy_stage_9);
+
+        }catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -354,11 +393,11 @@ public class BlockManager {
                 if (blocksPos[col][row] != null) {
 
 
-                    if (blocksPos[col][row] == "minecraft2d:grass_block") { g2d.drawImage(block[1].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
-                    if (blocksPos[col][row] == "minecraft2d:dirt") { g2d.drawImage(block[2].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
-                    if (blocksPos[col][row] == "minecraft2d:stone") { g2d.drawImage(block[3].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
-                    if (blocksPos[col][row] == "minecraft2d:oak_log") { g2d.drawImage(block[4].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
-                    if (blocksPos[col][row] == "minecraft2d:oak_leaves") { g2d.drawImage(block[5].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (Objects.equals(blocksPos[col][row], "minecraft2d:grass_block")) { g2d.drawImage(block[1].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (Objects.equals(blocksPos[col][row], "minecraft2d:dirt")) { g2d.drawImage(block[2].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (Objects.equals(blocksPos[col][row], "minecraft2d:stone")) { g2d.drawImage(block[3].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (Objects.equals(blocksPos[col][row], "minecraft2d:oak_log")) { g2d.drawImage(block[4].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
+                    if (Objects.equals(blocksPos[col][row], "minecraft2d:oak_leaves")) { g2d.drawImage(block[5].image, screenX, screenY, gp.tileSize, gp.tileSize, null); }
                 }
             }
             col++;
@@ -372,17 +411,132 @@ public class BlockManager {
 
         // Block Detection
         int blockX = (gp.mouseX + gp.player.worldX - gp.player.screenX) / gp.tileSize;
-        int blockY = (gp.mouseY + gp.player.worldY - gp.player.screenY) / gp.tileSize;
+        int blockY = (gp.mouseY + gp.player.worldY - gp.player.screenY) / gp.tileSize;;
+
         if (blockX >= 0 && blockX < worldCol && blockY >= 0 && blockY < worldRow) {
             if (blocksPos[blockX][blockY] != null) {
                 g2d.setColor(Color.WHITE);
                 g2d.drawString(blocksPos[blockX][blockY], gp.mouseX + 16, gp.mouseY);
 
-                if (gp.mouseLeftPressed == true) {
-                    if (blocksPos[blockX][blockY] == "minecraft2d:grass_block") {  }
+                // Detect blocksPos[blockX][blockY]'s x and y position
+                int worldX = blockX * gp.tileSize;
+                int worldY = blockY * gp.tileSize;
+                int screenX = worldX - gp.player.worldX + gp.player.screenX;
+                int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
-                    blocksPos[blockX][blockY] = "minecraft2d:air";
-                    mapBlockNum[blockX][blockY] = 0;
+                // Draw block selection
+                g2d.setColor(Color.WHITE);
+                g2d.drawRect(screenX, screenY, gp.tileSize, gp.tileSize);
+
+                // Block Breaking
+                if (gp.mouseLeftPressed == true) {
+
+                    if (blocksPos[blockX][blockY] == "minecraft2d:grass_block") {
+                        if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
+                            blockBreakingTimer = 54;
+                            originalBlockBreakingTimer = 54;
+                            currentBreakingBlockX = blockX;
+                            currentBreakingBlockY = blockY;
+                        }
+                        blockBreakingTimer--;
+                    }
+                    if (blocksPos[blockX][blockY] == "minecraft2d:dirt") {
+                        if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
+                            blockBreakingTimer = (int) 48.75;
+                            originalBlockBreakingTimer = (int) 48.75;
+                            currentBreakingBlockX = blockX;
+                            currentBreakingBlockY = blockY;
+                        }
+                        blockBreakingTimer--;
+
+                    }
+                    if (blocksPos[blockX][blockY] == "minecraft2d:stone") {
+                        if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
+                            blockBreakingTimer = 450;
+                            originalBlockBreakingTimer = 450;
+                            currentBreakingBlockX = blockX;
+                            currentBreakingBlockY = blockY;
+                        }
+                        blockBreakingTimer--;
+
+
+                    }
+                    if (blocksPos[blockX][blockY] == "minecraft2d:oak_log") {
+                        if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
+                            blockBreakingTimer = 180;
+                            originalBlockBreakingTimer = 180;
+                            currentBreakingBlockX = blockX;
+                            currentBreakingBlockY = blockY;
+                        }
+                        blockBreakingTimer--;
+
+                    }
+                    if (blocksPos[blockX][blockY] == "minecraft2d:oak_leaves") {
+                        if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
+                            blockBreakingTimer = 18;
+                            originalBlockBreakingTimer = 18;
+                            currentBreakingBlockX = blockX;
+                            currentBreakingBlockY = blockY;
+                        }
+                        blockBreakingTimer--;
+
+                    }
+
+                    // Block Breaking Animation
+                    double blockBreaking0 = originalBlockBreakingTimer / 1.11111111111;
+                    double blockBreaking1 = originalBlockBreakingTimer / 1.25;
+                    double blockBreaking2 = originalBlockBreakingTimer / 1.42857142857;
+                    double blockBreaking3 = originalBlockBreakingTimer / 1.66666666667;
+                    double blockBreaking4 = originalBlockBreakingTimer / 2;
+                    double blockBreaking5 = originalBlockBreakingTimer / 2.5;
+                    double blockBreaking6 = originalBlockBreakingTimer / 3.33333333333;
+                    double blockBreaking7 = originalBlockBreakingTimer / 5;
+                    double blockBreaking8 = originalBlockBreakingTimer / 10;
+                    double blockBreaking9 = originalBlockBreakingTimer / 20;
+                    if (blockBreakingTimer >= blockBreaking0) {
+                        g2d.drawImage(destroy_stage[0], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking1 && blockBreakingTimer < blockBreaking0) {
+                        g2d.drawImage(destroy_stage[1], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking2 && blockBreakingTimer < blockBreaking1) {
+                        g2d.drawImage(destroy_stage[2], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking3 && blockBreakingTimer < blockBreaking2) {
+                        g2d.drawImage(destroy_stage[3], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking4 && blockBreakingTimer < blockBreaking3) {
+                        g2d.drawImage(destroy_stage[4], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking5 && blockBreakingTimer < blockBreaking4) {
+                        g2d.drawImage(destroy_stage[5], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking6 && blockBreakingTimer < blockBreaking5) {
+                        g2d.drawImage(destroy_stage[6], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking7 && blockBreakingTimer < blockBreaking6) {
+                        g2d.drawImage(destroy_stage[7], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking8 && blockBreakingTimer < blockBreaking7) {
+                        g2d.drawImage(destroy_stage[8], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+                    if (blockBreakingTimer >= blockBreaking9 && blockBreakingTimer < blockBreaking8) {
+                        g2d.drawImage(destroy_stage[9], screenX, screenY, gp.tileSize, gp.tileSize, null);
+                    }
+
+
+
+
+                    if (blockBreakingTimer == 0) {
+                        blocksPos[blockX][blockY] = "minecraft2d:air";
+                        mapBlockNum[blockX][blockY] = 0;
+                    }
+                }
+                if (gp.mouseLeftPressed == false) {
+                    blockBreakingTimer = 0;
+                    originalBlockBreakingTimer = 0;
+                    currentBreakingBlockX = 0;
+                    currentBreakingBlockY = 0;
                 }
             }
         }

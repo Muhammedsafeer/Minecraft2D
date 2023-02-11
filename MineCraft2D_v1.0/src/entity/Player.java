@@ -161,15 +161,9 @@ public class Player extends Entity{
             worldY -= 20;
             jumpFPU--;
         }
-
     }
 
     public void draw(Graphics2D g2d) {
-
-        g2d.setColor(Color.RED);
-        g2d.drawRect(hitBox.x + screenX, hitBox.y + screenY, hitBox.width, hitBox.height);
-        g2d.setColor(null);
-
         g2d.drawImage(animations[aniCode][aniIndex], screenX, screenY, (int)83.2, (int)166.4, null);
     }
 }

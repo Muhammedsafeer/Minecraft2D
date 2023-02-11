@@ -129,7 +129,6 @@ public class GamePanel extends JPanel implements Runnable{
             mouseLeftPressed = false;
         }
 
-        System.out.println(mouseLeftPressed);
     }
     public void paintComponent(Graphics g) {
 
