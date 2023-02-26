@@ -1,0 +1,6 @@
+{
+  "name": "minecraft2d:air",
+  "parent": "minecraft2d:block",
+  "collision": "false",
+  "hardness": "0.0"
+}

@@ -10,6 +10,8 @@ public class SuperObject {
     public String name;
     public boolean collision = false;
     public int worldX, worldY;
+    public Rectangle hitBox = new Rectangle(14, 14, 20, 20);
+    public int hitBoxDefaultX = 14, hitBoxDefaultY = 14;
 
     public void draw(Graphics2D g2d, GamePanel gp) {
         int screenX = worldX - gp.player.worldX + gp.player.screenX;

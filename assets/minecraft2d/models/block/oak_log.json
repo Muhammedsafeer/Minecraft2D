@@ -1,0 +1,6 @@
+{
+  "name": "minecraft2d:oak_log",
+  "parent": "minecraft2d:block",
+  "collision": "false",
+  "hardness": "2.0"
+}

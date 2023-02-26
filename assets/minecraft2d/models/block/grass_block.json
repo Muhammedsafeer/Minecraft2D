@@ -1,0 +1,6 @@
+{
+  "name": "minecraft2d:grass_block",
+  "parent": "minecraft2d:block",
+  "collision": "true",
+  "hardness": "0.6"
+}

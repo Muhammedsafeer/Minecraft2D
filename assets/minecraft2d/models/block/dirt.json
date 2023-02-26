@@ -1,0 +1,6 @@
+{
+  "name": "minecraft2d:dirt",
+  "parent": "minecraft2d:block",
+  "collision": "true",
+  "hardness": "0.5"
+}

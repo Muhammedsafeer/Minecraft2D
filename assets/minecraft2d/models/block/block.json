@@ -1,0 +1,26 @@
+[
+  {
+    "id": "0",
+    "model": "air.json"
+  },
+  {
+    "id": "1",
+    "model": "grass_block.json"
+  },
+  {
+    "id": "2",
+    "model": "dirt.json"
+  },
+  {
+    "id": "3",
+    "model": "stone.json"
+  },
+  {
+    "id": "4",
+    "model": "oak_log.json"
+  },
+  {
+    "id": "5",
+    "model": "oak_leaves.json"
+  }
+]

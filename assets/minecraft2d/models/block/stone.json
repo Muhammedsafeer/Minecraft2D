@@ -1,0 +1,6 @@
+{
+  "name": "minecraft2d:stone",
+  "parent": "minecraft2d:block",
+  "collision": "true",
+  "hardness": "5.0"
+}

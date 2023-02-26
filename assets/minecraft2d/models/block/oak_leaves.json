@@ -1,0 +1,6 @@
+{
+  "name": "minecraft2d:oak_leaves",
+  "parent": "minecraft2d:block",
+  "collision": "false",
+  "hardness": "0.2"
+}
