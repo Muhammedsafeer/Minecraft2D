@@ -38,7 +38,37 @@ public class Player extends Entity{
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
-        hitBox = new Rectangle(25, 40, 32, 80);
+        hitBox = new Rectangle();
+        hitBox.x = 25;
+        hitBox.y = 40;
+        hitBox.width = 32;
+        hitBox.height = 80;
+
+        legHitBox = new Rectangle();
+        legHitBox.x = screenX + 26;
+        legHitBox.y = screenY + 119;
+        legHitBox.width = 28;
+        legHitBox.height = 1;
+
+        rightHitBox = new Rectangle();
+        rightHitBox.x = screenX + 56;
+        rightHitBox.y = screenY + 40;
+        rightHitBox.width = 1;
+        rightHitBox.height = 80;
+
+        leftHitBox = new Rectangle();
+        leftHitBox.x = screenX + 24;
+        leftHitBox.y = screenY + 40;
+        leftHitBox.width = 1;
+        leftHitBox.height = 80;
+
+        topHitBox = new Rectangle();
+        topHitBox.x = screenX + 26;
+        topHitBox.y = screenY + 39;
+        topHitBox.width = 28;
+        topHitBox.height = 1;
+
+
         hitBoxDefaultX = hitBox.x;
         hitBoxDefaultY = hitBox.y;
 
@@ -107,7 +137,6 @@ public class Player extends Entity{
         }
 
     }
-    int jumpFPU = 0;
 
     public void update() {
 
@@ -131,7 +160,7 @@ public class Player extends Entity{
             aniCode = 3;
         }
 
-        if (KeyH.upPressed == true && downCollisionOnY == true) {
+        if (KeyH.upPressed == true && downCollision == true) {
             directionY = "up";
         }
         if (directionY != "up") {
@@ -151,33 +180,29 @@ public class Player extends Entity{
         if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "right") { currentAction = "idle_right"; }
         if (KeyH.leftPressed == false && KeyH.rightPressed == false && mainAction == "left") { currentAction = "idle_left"; }
 
-        collisionOnX = false;
-        collisionOnY = false;
-        downCollisionOnY = false;
+        rightCollision = false;
+        leftCollision = false;
+        upCollision = false;
+        downCollision = false;
+
         gp.cChecker.checkBlock(this);
         int objIndex = gp.cChecker.checkObject(this, true);
+
         pickUpItem(objIndex);
 
-        if (collisionOnX == false) {
-
-            switch (directionX) {
-                case "left": worldX -= speed; break;
-                case "right": worldX += speed; break;
-            }
+        switch (directionX) {
+            case "left": if (leftCollision == false) { worldX -= speed; } break;
+            case "right": if (rightCollision == false) { worldX += speed; } break;
         }
-        if (collisionOnY == false) {
-            switch (directionY) {
-                case "up": jumpFPU = 5; break;
-            }
+        switch (directionY) {
+            case "up": if (upCollision == false) { jumpFPU = 5;} break;
+            case "down": if (downCollision == false) { worldY += speed; } break;
         }
-
-        if (downCollisionOnY == false) {
-            switch (directionY) {
-                case "down": worldY += speed; break;
-            }
-        }
-        if (jumpFPU > 0 && collisionOnY == false) {
-            worldY -= 20;
+        jump(20);
+    }
+    public void jump(int jumpDistence) {
+        if (jumpFPU > 0 && upCollision == false) {
+            worldY -= jumpDistence;
             jumpFPU--;
         }
     }
@@ -209,6 +234,14 @@ public class Player extends Entity{
         for (int i=0;i<inv.length;i++) {
             inv[i].draw(g2d, i);
         }
+        g2d.setColor(Color.WHITE);
+        g2d.drawRect(hitBox.x + screenX, hitBox.y + screenY, hitBox.width, hitBox.height);
+
+        g2d.setColor(Color.BLUE);
+        g2d.drawRect(legHitBox.x, legHitBox.y, legHitBox.width, legHitBox.height);
+        g2d.drawRect(rightHitBox.x, rightHitBox.y, rightHitBox.width, rightHitBox.height);
+        g2d.drawRect(leftHitBox.x, leftHitBox.y, leftHitBox.width, leftHitBox.height);
+        g2d.drawRect(topHitBox.x, topHitBox.y, topHitBox.width, topHitBox.height);
     }
 }
 

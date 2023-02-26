@@ -163,6 +163,8 @@ public class GamePanel extends JPanel implements Runnable{
 
         player.draw(g2d);
 
+        cChecker.draw(g2d);
+
         // CrossHair
         g2d.drawImage(crossHair.getSubimage(240, 0, 16, 16), mouseX - 16, mouseY - 16, 32, 32, null);
 

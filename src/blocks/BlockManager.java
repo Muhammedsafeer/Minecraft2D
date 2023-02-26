@@ -446,7 +446,7 @@ public class BlockManager {
 
         // Block Detection
         int blockX = (gp.mouseX + gp.player.worldX - gp.player.screenX) / gp.tileSize;
-        int blockY = (gp.mouseY + gp.player.worldY - gp.player.screenY) / gp.tileSize;;
+        int blockY = (gp.mouseY + gp.player.worldY - gp.player.screenY) / gp.tileSize;
 
         if (blockX >= 0 && blockX < worldCol && blockY >= 0 && blockY < worldRow) {
             if (blocksPos[blockX][blockY] != null) {

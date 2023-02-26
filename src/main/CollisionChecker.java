@@ -1,76 +1,139 @@
 package main;
 
 import entity.Entity;
+import entity.Player;
+
+import java.awt.*;
 
 public class CollisionChecker {
 
     GamePanel gp;
+    Player player;
+    // down
+    Rectangle blockRect1, blockRect2, blockRect3;
+    // right
+    Rectangle blockRect4, blockRect5;
+    // left
+    Rectangle blockRect6, blockRect7;
+    // up
+    Rectangle blockRect8, blockRect9, blockRect10;
+
     public CollisionChecker(GamePanel gp) {
         this.gp = gp;
     }
 
     public void checkBlock(Entity entity) {
 
-        int entityLeftWorldX = entity.worldX + entity.hitBox.x;
-        int entityRightWorldX = entity.worldX + entity.hitBox.x + entity.hitBox.width;
-        int entityTopWorldY = entity.worldY + entity.hitBox.y;
-        int entityBottomWorldY = entity.worldY + entity.hitBox.y + entity.hitBox.height;
+        // Down Collision
+        for (int i=0;i<3;i++) {
+            // Block Detection
+            int blockX = ((gp.player.worldX + gp.tileSize) / gp.tileSize) - 1 + i;
+            int blockY = (gp.player.worldY + (3 * gp.tileSize)) / gp.tileSize;
 
-        int entityLeftCol = entityLeftWorldX/gp.tileSize;
-        int entityRightCol = entityRightWorldX/gp.tileSize;
-        int entityTopRow = entityTopWorldY/gp.tileSize;
-        int entityBottomRow = entityBottomWorldY/gp.tileSize;
+            // Detect blocksPos[blockX][blockY]'s x and y position
+            int worldX = blockX * gp.tileSize;
+            int worldY = blockY * gp.tileSize;
+            int screenX = worldX - gp.player.worldX + gp.player.screenX;
+            int screenY = worldY - gp.player.worldY + gp.player.screenY;
 
+            int blockNum = gp.blockM.mapBlockNum[blockX][blockY];
 
-        int blockNum1, blockNum2;
-
-
-        try {
-            switch (entity.directionX) {
-
-                case "left":
-                    entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
-                    blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityTopRow];
-                    blockNum2 = gp.blockM.mapBlockNum[entityLeftCol][entityBottomRow];
-
-                    if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                        entity.collisionOnX = true;
-                    }
-                    break;
-                case "right":
-                    entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
-                    blockNum1 = gp.blockM.mapBlockNum[entityRightCol][entityTopRow];
-                    blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityBottomRow];
-
-                    if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                        entity.collisionOnX = true;
-                    }
-                    break;
+            if (gp.blockM.block[blockNum].collision == true) {
+                if (i == 2) { blockRect1 = new Rectangle(screenX, screenY, gp.tileSize, 1); }
+                if (i == 1) { blockRect2 = new Rectangle(screenX, screenY, gp.tileSize, 1); }
+                if (i == 0) { blockRect3 = new Rectangle(screenX, screenY, gp.tileSize, 1); }
+            } else {
+                if (i == 2) { blockRect1 = new Rectangle(0, 0, 0, 0); }
+                if (i == 1) { blockRect2 = new Rectangle(0, 0, 0, 0); }
+                if (i == 0) { blockRect3 = new Rectangle(0, 0, 0, 0); }
             }
-            switch (entity.directionY) {
 
-                case "up":
-                    entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
-                    blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityTopRow];
-                    blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityTopRow];
+        }
 
-                    if (gp.blockM.block[blockNum1].collision == true || gp.blockM.block[blockNum2].collision == true) {
-                        entity.collisionOnY = true;
-                    }
-                    break;
-                case "down":
-                    entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
-                    blockNum1 = gp.blockM.mapBlockNum[entityLeftCol][entityBottomRow];
-                    blockNum2 = gp.blockM.mapBlockNum[entityRightCol][entityBottomRow];
+        entity.legHitBox.y += 1;
+        if (entity.legHitBox.intersects(blockRect1) || entity.legHitBox.intersects(blockRect2) || entity.legHitBox.intersects(blockRect3)) {
+            entity.downCollision = true;
+        }
+        entity.legHitBox.y -= 1;
 
-                    if (gp.blockM.block[blockNum1].collision == true && gp.blockM.block[blockNum2].collision == true) {
-                        entity.downCollisionOnY = true;
-                    }
-                    break;
+        // Right Collision
+        for (int i=0;i<2;i++) {
+            // Block Detection
+            int blockX = ((gp.player.worldX + gp.tileSize) / gp.tileSize) + 1;
+            int blockY = ((gp.player.worldY + (2 * gp.tileSize)) / gp.tileSize) - i;
+
+            // Detect blocksPos[blockX][blockY]'s x and y position
+            int worldX = blockX * gp.tileSize;
+            int worldY = blockY * gp.tileSize;
+            int screenX = worldX - gp.player.worldX + gp.player.screenX;
+            int screenY = worldY - gp.player.worldY + gp.player.screenY;
+
+            int blockNum = gp.blockM.mapBlockNum[blockX][blockY];
+
+            if (gp.blockM.block[blockNum].collision == true) {
+                if (i == 1) { blockRect4 = new Rectangle(screenX, screenY, gp.tileSize, gp.tileSize); }
+                if (i == 0) { blockRect5 = new Rectangle(screenX, screenY, gp.tileSize, gp.tileSize); }
+            } else {
+                if (i == 1) { blockRect4 = new Rectangle(0, 0, 0, 0); }
+                if (i == 0) { blockRect5 = new Rectangle(0, 0, 0, 0); }
             }
-        }catch (Exception e) {
-            entity.worldX = 89 * gp.tileSize;
-            entity.worldY = 193 * gp.tileSize;
+        }
+        if (entity.rightHitBox.intersects(blockRect4) || entity.rightHitBox.intersects(blockRect5)) {
+            entity.rightCollision = true;
+        }
+
+        // Left Collision
+        for (int i=0;i<2;i++) {
+            // Block Detection
+            int blockX = ((gp.player.worldX + gp.tileSize) / gp.tileSize) - 1;
+            int blockY = ((gp.player.worldY + (2 * gp.tileSize)) / gp.tileSize) - i;
+
+            // Detect blocksPos[blockX][blockY]'s x and y position
+            int worldX = blockX * gp.tileSize;
+            int worldY = blockY * gp.tileSize;
+            int screenX = worldX - gp.player.worldX + gp.player.screenX;
+            int screenY = worldY - gp.player.worldY + gp.player.screenY;
+
+            int blockNum = gp.blockM.mapBlockNum[blockX][blockY];
+
+            if (gp.blockM.block[blockNum].collision == true) {
+                if (i == 1) { blockRect6 = new Rectangle(screenX, screenY, gp.tileSize, gp.tileSize); }
+                if (i == 0) { blockRect7 = new Rectangle(screenX, screenY, gp.tileSize, gp.tileSize); }
+            } else {
+                if (i == 1) { blockRect6 = new Rectangle(0, 0, 0, 0); }
+                if (i == 0) { blockRect7 = new Rectangle(0, 0, 0, 0); }
+            }
+        }
+        if (entity.leftHitBox.intersects(blockRect6) || entity.leftHitBox.intersects(blockRect7)) {
+            entity.leftCollision = true;
+        }
+
+        // Up Collision
+        for (int i=0;i<1;i++) {
+            // Block Detection
+            int blockX = ((gp.player.worldX + gp.tileSize) / gp.tileSize) + i;
+            int blockY = gp.player.worldY / gp.tileSize;
+
+            // Detect blocksPos[blockX][blockY]'s x and y position
+            int worldX = blockX * gp.tileSize;
+            int worldY = blockY * gp.tileSize;
+            int screenX = worldX - gp.player.worldX + gp.player.screenX;
+            int screenY = worldY - gp.player.worldY + gp.player.screenY;
+
+            int blockNum = gp.blockM.mapBlockNum[blockX][blockY];
+
+            if (gp.blockM.block[blockNum].collision == true) {
+                if (i == 0) { blockRect10 = new Rectangle(screenX, screenY + gp.tileSize, gp.tileSize, 1); }
+            } else {
+                if (i == 0) { blockRect10 = new Rectangle(0, 0, 0, 0); }
+            }
+
+            if (gp.blockM.block[blockNum].collision == true) {
+                if (entity.directionY == "up") {
+                    entity.upCollision = true;
+                    entity.worldY -= entity.speed;
+                }
+            }
         }
     }
 
@@ -137,6 +200,18 @@ public class CollisionChecker {
         }
 
         return index;
+    }
+
+    public void draw(Graphics2D g2d) {
+        g2d.setColor(Color.RED);
+        g2d.draw(blockRect1);
+        g2d.draw(blockRect2);
+        g2d.draw(blockRect3);
+        g2d.draw(blockRect4);
+        g2d.draw(blockRect5);
+        g2d.draw(blockRect6);
+        g2d.draw(blockRect7);
+        g2d.draw(blockRect10);
     }
 
 }

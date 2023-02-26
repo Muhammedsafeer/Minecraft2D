@@ -9,6 +9,11 @@ public class Entity {
     public int speed;
 
     public Rectangle hitBox;
+    public Rectangle legHitBox;
+    public Rectangle rightHitBox;
+    public Rectangle leftHitBox;
+    public Rectangle topHitBox;
+
     public int hitBoxDefaultX, hitBoxDefaultY;
 
     public String currentAction = "idle_left";
@@ -22,9 +27,13 @@ public class Entity {
     int aniTick, aniIndex, aniSpeed = 30, aniCode;
     int maxAniIndex;
 
-    public boolean collisionOnX = false;
-    public boolean collisionOnY = false;
-    public boolean downCollisionOnY = false;
+    public boolean rightCollision = false;
+    public boolean leftCollision = false;
+    public boolean upCollision = false;
+    public boolean downCollision = false;
 
     public String currentItem = "none";
+
+    public int jumpFPU = 0;
+
 }
