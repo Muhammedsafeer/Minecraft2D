@@ -1,14 +1,12 @@
 package main;
 
 import entity.Entity;
-import entity.Player;
 
 import java.awt.*;
 
 public class CollisionChecker {
 
     GamePanel gp;
-    Player player;
     // down
     Rectangle blockRect1, blockRect2, blockRect3;
     // right
@@ -16,7 +14,7 @@ public class CollisionChecker {
     // left
     Rectangle blockRect6, blockRect7;
     // up
-    Rectangle blockRect8, blockRect9, blockRect10;
+    Rectangle blockRect8;
 
     public CollisionChecker(GamePanel gp) {
         this.gp = gp;
@@ -123,9 +121,9 @@ public class CollisionChecker {
             int blockNum = gp.blockM.mapBlockNum[blockX][blockY];
 
             if (gp.blockM.block[blockNum].collision == true) {
-                if (i == 0) { blockRect10 = new Rectangle(screenX, screenY + gp.tileSize, gp.tileSize, 1); }
+                if (i == 0) { blockRect8 = new Rectangle(screenX, screenY + gp.tileSize, gp.tileSize, 1); }
             } else {
-                if (i == 0) { blockRect10 = new Rectangle(0, 0, 0, 0); }
+                if (i == 0) { blockRect8 = new Rectangle(0, 0, 0, 0); }
             }
 
             if (gp.blockM.block[blockNum].collision == true) {
@@ -196,6 +194,22 @@ public class CollisionChecker {
                 entity.hitBox.y = entity.hitBoxDefaultY;
                 gp.obj[i].hitBox.x = gp.obj[i].hitBoxDefaultX;
                 gp.obj[i].hitBox.y = gp.obj[i].hitBoxDefaultY;
+
+                // Object Collision
+                // Get the block number of the block the object is standing on
+                int blockX = ((gp.obj[i].worldX + gp.tileSize) / gp.tileSize) - 1;
+                int blockY = ((gp.obj[i].worldY - 20) + gp.tileSize) / gp.tileSize;
+                int blockNum = gp.blockM.mapBlockNum[blockX][blockY];
+
+                System.out.println(blockNum);
+                int Gravity = 2;
+                // If the block is not solid, the object will fall
+                if (gp.blockM.block[blockNum].collision != true) {
+                    gp.obj[i].worldY += Gravity;
+                    Gravity++;
+                }else {
+                    Gravity = 2;
+                }
             }
         }
 
@@ -211,7 +225,6 @@ public class CollisionChecker {
         g2d.draw(blockRect5);
         g2d.draw(blockRect6);
         g2d.draw(blockRect7);
-        g2d.draw(blockRect10);
+        g2d.draw(blockRect8);
     }
-
 }
