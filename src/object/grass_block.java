@@ -8,6 +8,7 @@ public class grass_block extends SuperObject{
     public grass_block() {
 
         name = "grass_block";
+        id = 1;
 
         try {
 

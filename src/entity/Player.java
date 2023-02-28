@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import blocks.BlockManager;
 import main.GamePanel;
 import main.KeyHandler;
 import main.MouseHandler;
@@ -17,7 +18,7 @@ public class Player extends Entity{
     GamePanel gp;
     KeyHandler KeyH;
     MouseHandler MouseH;
-    Inventory inv[];
+    public Inventory[] inv;
 
     BufferedImage widjets;
     BufferedImage hotbarimg;
@@ -86,6 +87,8 @@ public class Player extends Entity{
         for (int i=0;i<inv.length;i++) {
             inv[i] = new Inventory(gp, this);
         }
+
+        currentItemSlot = 999;
     }
 
     BufferedImage[][] animations;
@@ -143,6 +146,7 @@ public class Player extends Entity{
 
 
         updateAnimationTick();
+        updatePlayerItem();
 
         directionX = "";
         directionY = "";
@@ -195,7 +199,7 @@ public class Player extends Entity{
             case "right": if (rightCollision == false) { worldX += speed; } break;
         }
         switch (directionY) {
-            case "up": if (upCollision == false) { jumpFPU = 5;} break;
+            case "up": if (upCollision == false) { jumpFPU = 5; downCollision = false;} break;
             case "down": if (downCollision == false) { worldY += speed; } break;
         }
         jump(20);
@@ -206,6 +210,71 @@ public class Player extends Entity{
             jumpFPU--;
         }
     }
+
+    public void updatePlayerItem() {
+        // Get current item
+        if (currentItemSlot == 999) { currentItemSlot = 0; }
+        if (KeyH.num1Pressed == true) {
+            if (inv[0].item != "empty") {
+                currentItemSlot = 0;
+            }
+        }
+        if (KeyH.num2Pressed == true) {
+            if (inv[1].item != "empty") {
+                currentItemSlot = 1;
+            }
+        }
+        if (KeyH.num3Pressed == true) {
+            if (inv[2].item != "empty") {
+                currentItemSlot = 2;
+            }
+        }
+        if (KeyH.num4Pressed == true) {
+            if (inv[3].item != "empty") {
+                currentItemSlot = 3;
+            }
+        }
+        if (KeyH.num5Pressed == true) {
+            if (inv[4].item != "empty") {
+                currentItemSlot = 4;
+            }
+        }
+        if (KeyH.num6Pressed == true) {
+            if (inv[5].item != "empty") {
+                currentItemSlot = 5;
+            }
+        }
+        if (KeyH.num7Pressed == true) {
+            if (inv[6].item != "empty") {
+                currentItemSlot = 6;
+            }
+        }
+        if (KeyH.num8Pressed == true) {
+            if (inv[7].item != "empty") {
+                currentItemSlot = 7;
+            }
+        }
+        if (KeyH.num9Pressed == true) {
+            if (inv[8].item != "empty") {
+                currentItemSlot = 8;
+            }
+        }
+
+        currentItem = inv[currentItemSlot].item;
+        currentItemID = inv[currentItemSlot].id;
+
+        // Set current item to empty when count is 0
+        if (inv[currentItemSlot].count <= 0) {
+            inv[currentItemSlot].item = "empty";
+            inv[currentItemSlot].count = 0;
+            inv[currentItemSlot].id = 0;
+            inv[currentItemSlot].img = null;
+            currentItem = "empty";
+            currentItemID = 0;
+        }
+
+    }
+
     public void pickUpItem(int i) {
         if (i != 999) {
             String item = gp.obj[i].name;
@@ -213,12 +282,17 @@ public class Player extends Entity{
                 if (inv[j].item == item) {
                     inv[j].count++;
                     inv[j].img = gp.obj[i].image;
+                    inv[j].id = gp.obj[i].id;
+                    System.out.println("slot: " + j + " item: " + inv[j].item + " count: " + inv[j].count + " id: " + inv[j].id);
                     gp.obj[i] = null;
                     break;
                 }
                 if (inv[j].item == "empty") {
                     inv[j].item = item;
                     inv[j].count++;
+                    inv[j].img = gp.obj[i].image;
+                    inv[j].id = gp.obj[i].id;
+                    System.out.println("slot: " + j + " item: " + inv[j].item + " count: " + inv[j].count + " id: " + inv[j].id);
                     gp.obj[i] = null;
                     break;
                 }

@@ -448,36 +448,38 @@ public class BlockManager {
         int blockX = (gp.mouseX + gp.player.worldX - gp.player.screenX) / gp.tileSize;
         int blockY = (gp.mouseY + gp.player.worldY - gp.player.screenY) / gp.tileSize;
 
+
+        // Detect blocksPos[blockX][blockY]'s x and y position
+        int worldX = blockX * gp.tileSize;
+        int worldY = blockY * gp.tileSize;
+        int screenX = worldX - gp.player.worldX + gp.player.screenX;
+        int screenY = worldY - gp.player.worldY + gp.player.screenY;
+
+        // Draw block selection
+        g2d.setColor(Color.WHITE);
+        g2d.drawRect(screenX, screenY, gp.tileSize, gp.tileSize);
+
+
         if (blockX >= 0 && blockX < worldCol && blockY >= 0 && blockY < worldRow) {
             if (blocksPos[blockX][blockY] != null) {
                 g2d.setColor(Color.WHITE);
                 g2d.drawString(blocksPos[blockX][blockY], gp.mouseX + 16, gp.mouseY);
 
-                // Detect blocksPos[blockX][blockY]'s x and y position
-                int worldX = blockX * gp.tileSize;
-                int worldY = blockY * gp.tileSize;
-                int screenX = worldX - gp.player.worldX + gp.player.screenX;
-                int screenY = worldY - gp.player.worldY + gp.player.screenY;
-
-                // Draw block selection
-                g2d.setColor(Color.WHITE);
-                g2d.drawRect(screenX, screenY, gp.tileSize, gp.tileSize);
-
                 // Block Breaking
                 if (gp.mouseLeftPressed == true) {
+                    System.out.println("Left Clicked!");
 
                     if (blocksPos[blockX][blockY] != null) {
                         int id = 0;
                         while (blocksPos[blockX][blockY] != block[id].name) {
                             id++;
                         }
+                        System.out.println("Block ID: " + id);
                         if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
 
-                            if (gp.player.currentItem == "none") {
-                                blockBreakingTimer = block[id].hardness * 90;
-                                originalBlockBreakingTimer = block[id].hardness * 90;
-                                System.out.println("Test Passed!" + " timer = " + blockBreakingTimer);
-                            }
+                            blockBreakingTimer = block[id].hardness * 90;
+                            originalBlockBreakingTimer = block[id].hardness * 90;
+
                             currentBreakingBlockX = blockX;
                             currentBreakingBlockY = blockY;
                         }
@@ -555,8 +557,26 @@ public class BlockManager {
                     currentBreakingBlockX = 0;
                     currentBreakingBlockY = 0;
                 }
+
             }
         }
 
+
+        // Block Placing
+        if (gp.mouseRightPressed == true && gp.player.currentItem != "empty") {
+            if (blocksPos[blockX - 1][blockY] != null || blocksPos[blockX + 1][blockY] != null ||
+                    blocksPos[blockX][blockY - 1] != null || blocksPos[blockX][blockY + 1] != null) {
+                System.out.println("Right Clicked");
+                if (blocksPos[blockX][blockY] == null || blocksPos[blockX][blockY] == "minecraft2d:air") {
+                    int id = gp.player.currentItemID;
+                    System.out.println("Block ID: " + id);
+                    if (id != 0) {
+                        blocksPos[blockX][blockY] = block[id].name;
+                        mapBlockNum[blockX][blockY] = id;
+                        gp.player.inv[gp.player.currentItemSlot].count--;
+                    }
+                }
+            }
+        }
     }
 }

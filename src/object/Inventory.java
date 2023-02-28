@@ -13,6 +13,7 @@ import java.io.InputStream;
 public class Inventory {
 
     public String item;
+    public int id;
     public int count;
     public BufferedImage img;
 
@@ -24,6 +25,7 @@ public class Inventory {
         this.player = player;
         item = "empty";
         count = 0;
+        id = 0;
     }
     public void draw(Graphics2D g2d, int slot) {
         int screenX = (player.hotbarX + 8) + (slot * 20);

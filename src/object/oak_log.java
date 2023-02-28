@@ -8,6 +8,7 @@ public class oak_log extends SuperObject{
     public oak_log() {
 
         name = "oak_log";
+        id = 4;
 
         try {
 

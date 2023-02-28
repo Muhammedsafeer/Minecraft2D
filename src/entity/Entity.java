@@ -32,7 +32,9 @@ public class Entity {
     public boolean upCollision = false;
     public boolean downCollision = false;
 
-    public String currentItem = "none";
+    public String currentItem;
+    public int currentItemID;
+    public int currentItemSlot;
 
     public int jumpFPU = 0;
 

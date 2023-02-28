@@ -34,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable{
     public int mouseWorldY;
 
     public boolean mouseLeftPressed = false;
+    public boolean mouseRightPressed = false;
 
     public BlockManager blockM = new BlockManager(this);
     KeyHandler KeyH = new KeyHandler();
@@ -139,12 +140,18 @@ public class GamePanel extends JPanel implements Runnable{
         mouseWorldX = mouseX + player.worldX - player.screenX;
         mouseWorldY = mouseY + player.worldY - player.screenY;
 
-        // Detect mouse left click
+        // Detect mouse click
         if (mouseH.mouseLeftPressed) {
             mouseLeftPressed = true;
         } else {
             mouseLeftPressed = false;
         }
+        if (mouseH.mouseRightPressed) {
+            mouseRightPressed = true;
+        } else {
+            mouseRightPressed = false;
+        }
+
 
     }
     public void paintComponent(Graphics g) {

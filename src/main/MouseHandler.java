@@ -11,6 +11,7 @@ public class MouseHandler implements MouseListener,MouseMotionListener {
     int mouseX, mouseY;
 
     public boolean mouseLeftPressed = false;
+    public boolean mouseRightPressed = false;
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -23,7 +24,10 @@ public class MouseHandler implements MouseListener,MouseMotionListener {
         if (e.getButton() == MouseEvent.BUTTON1) {
             mouseLeftPressed = true;
         }
-
+        // Detect if the mouse right button is pressed
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            mouseRightPressed = true;
+        }
     }
 
     @Override
@@ -31,6 +35,10 @@ public class MouseHandler implements MouseListener,MouseMotionListener {
         // Detect if the mouse left button is released
         if (e.getButton() == MouseEvent.BUTTON1) {
             mouseLeftPressed = false;
+        }
+        // Detect if the mouse right button is released
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            mouseRightPressed = false;
         }
     }
 

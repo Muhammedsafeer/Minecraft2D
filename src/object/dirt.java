@@ -8,6 +8,7 @@ public class dirt extends SuperObject{
     public dirt() {
 
         name = "dirt";
+        id = 2;
 
         try {
 

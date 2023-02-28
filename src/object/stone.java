@@ -7,6 +7,7 @@ public class stone extends SuperObject{
     public stone() {
 
         name = "stone";
+        id = 3;
 
         try {
 
