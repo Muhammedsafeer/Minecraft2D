@@ -95,7 +95,7 @@ public class BlockManager {
                 String name = (String) jsonObject.get("name");
                 String parent = (String) jsonObject.get("parent");
                 String hardness = (String) jsonObject.get("hardness");
-                System.out.println(hardness);
+//                System.out.println(hardness);
 
                 block[id] = new Block();
                 block[id].parent = parent;
@@ -377,7 +377,7 @@ public class BlockManager {
                             blocksPos[col - 1][row - 7] = block[5].name;
                             blocksPos[col][row - 7] = block[5].name;
                             blocksPos[col + 1][row - 7] = block[5].name;
-                            System.out.println("Tree Generated at" + col + " " + (row - 1));
+//                            System.out.println("Tree Generated at" + col + " " + (row - 1));
                         }
                     }
                 }
@@ -462,19 +462,17 @@ public class BlockManager {
 
         if (blockX >= 0 && blockX < worldCol && blockY >= 0 && blockY < worldRow) {
             if (blocksPos[blockX][blockY] != null) {
-                g2d.setColor(Color.WHITE);
-                g2d.drawString(blocksPos[blockX][blockY], gp.mouseX + 16, gp.mouseY);
 
                 // Block Breaking
                 if (gp.mouseLeftPressed == true) {
-                    System.out.println("Left Clicked!");
+//                    System.out.println("Left Clicked!");
 
                     if (blocksPos[blockX][blockY] != null) {
                         int id = 0;
                         while (blocksPos[blockX][blockY] != block[id].name) {
                             id++;
                         }
-                        System.out.println("Block ID: " + id);
+//                        System.out.println("Block ID: " + id);
                         if (blockBreakingTimer <= 0 && currentBreakingBlockX != blockX || currentBreakingBlockY != blockY) {
 
                             blockBreakingTimer = block[id].hardness * 90;

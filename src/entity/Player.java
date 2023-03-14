@@ -283,7 +283,7 @@ public class Player extends Entity{
                     inv[j].count++;
                     inv[j].img = gp.obj[i].image;
                     inv[j].id = gp.obj[i].id;
-                    System.out.println("slot: " + j + " item: " + inv[j].item + " count: " + inv[j].count + " id: " + inv[j].id);
+//                    System.out.println("slot: " + j + " item: " + inv[j].item + " count: " + inv[j].count + " id: " + inv[j].id);
                     gp.obj[i] = null;
                     break;
                 }
@@ -292,7 +292,7 @@ public class Player extends Entity{
                     inv[j].count++;
                     inv[j].img = gp.obj[i].image;
                     inv[j].id = gp.obj[i].id;
-                    System.out.println("slot: " + j + " item: " + inv[j].item + " count: " + inv[j].count + " id: " + inv[j].id);
+//                    System.out.println("slot: " + j + " item: " + inv[j].item + " count: " + inv[j].count + " id: " + inv[j].id);
                     gp.obj[i] = null;
                     break;
                 }
